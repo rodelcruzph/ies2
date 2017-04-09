@@ -25,15 +25,18 @@ var app = {
 				face: 'right'
 			}
 		},
-		minPeople: 2,
-		maxPeople: 2,
+		minPeople: 10,
+		maxPeople: 10,
 		people: {},
 		sortedPeople: [{}],
-		timeInter: 360,
+		// timeInter: 360,
+		timeInter: 100,
 		dtd: {},
 		currStep: 0,
 		maxSteps: 0,
-		startMove: ''
+		startMove: '',
+		currPerson: 0,
+		numOfPeopleToMove: 0
 	},
 
 	init: function() {
@@ -219,12 +222,44 @@ var app = {
 		},
 
 		movePerson: function() {
-			var x, y, numOfPeople = app.vars.sortedPeople.length, i = 0;
 
-				app.vars.maxSteps = app.vars.sortedPeople[numOfPeople - 1].steps;
-				
+			var x, y, startY, endY, startX, endX, label;
 
 			jQuery('.play-btn').on('click', function() {
+
+				app.vars.startMove = setInterval(function() {
+
+					app.vars.numOfPeopleToMove = app.vars.sortedPeople.length;
+
+					if(app.vars.numOfPeopleToMove > 0) {
+
+						app.vars.maxSteps = app.vars.sortedPeople[app.vars.numOfPeopleToMove - 1].steps;
+
+						console.log(app.vars.currPerson);
+
+						startY = app.vars.sortedPeople[app.vars.currPerson].currRow,
+						endY = app.vars.sortedPeople[app.vars.currPerson].endRow,
+						startX = app.vars.sortedPeople[app.vars.currPerson].currCol,
+						endX = app.vars.sortedPeople[app.vars.currPerson].endCol,
+						label = app.vars.sortedPeople[app.vars.currPerson].num;
+
+						app.move.getDirection(startY, endY, startX, endX, label, app.vars.currPerson);
+
+						app.vars.currPerson++;
+
+						if(app.vars.currPerson == app.vars.numOfPeopleToMove) {
+							app.vars.currPerson = 0;
+							app.vars.currStep = app.vars.currStep + 1;
+						}
+
+					} else {
+						clearInterval(app.vars.startMove);
+					}
+
+				}, app.vars.timeInter);
+
+
+
 
 				// for(var i = 0; i < numOfPeople; i++) {
 
@@ -237,7 +272,9 @@ var app = {
 				// 		app.move.getDirection(startY, endY, startX, endX, label);
 				// }
 
-				app.vars.startMove = setInterval(function() {
+
+
+				/*app.vars.startMove = setInterval(function() {
 					var startY = app.vars.sortedPeople[i].currRow,
 						endY = app.vars.sortedPeople[i].endRow,
 						startX = app.vars.sortedPeople[i].currCol,
@@ -260,7 +297,7 @@ var app = {
 						clearInterval(app.vars.startMove);
 					}
 
-				}, app.vars.timeInter);
+				}, app.vars.timeInter);*/
 			});
 
 		},
@@ -366,6 +403,11 @@ var app = {
 		moveExit: function(currRow, endRow, currCol, endCol, person, id, cbf) {
 			jQuery('.classroom-wrap li[data-row=' + currRow + '][data-col=' + currCol + ']').removeClass('people').find('span.item').html('');
 
+			app.vars.sortedPeople.splice(id, 1);
+			app.vars.currPerson = -1;
+
+			console.log(app.vars.currPerson);
+
 			if(typeof cbf == 'function') {
 				cbf.call(this);
 			}			
@@ -373,10 +415,14 @@ var app = {
 
 		moveUp: function(currRow, endRow, currCol, endCol, person, id, cbf) {
 
-			jQuery('.classroom-wrap li[data-row=' + currRow + '][data-col=' + currCol + ']').removeClass('people').find('span.item').html('');
-			jQuery('.classroom-wrap li[data-row=' + (currRow-1) + '][data-col=' + currCol + ']').addClass('people').find('span.item').html(person);
+			if(!jQuery('.classroom-wrap li[data-row=' + (currRow-1) + '][data-col=' + currCol + ']').hasClass('people')) {
+				jQuery('.classroom-wrap li[data-row=' + currRow + '][data-col=' + currCol + ']').removeClass('people').find('span.item').html('');
+				jQuery('.classroom-wrap li[data-row=' + (currRow-1) + '][data-col=' + currCol + ']').addClass('people').find('span.item').html(person);
 
-			app.move.updatePeopleList((currRow-1), endRow, currCol, endCol, person, id);
+				app.move.updatePeopleList((currRow-1), endRow, currCol, endCol, person, id);
+			} else {
+				console.log('pass');
+			}
 
 			if(typeof cbf == 'function') {
 				cbf.call(this);
@@ -385,10 +431,14 @@ var app = {
 
 		moveRight: function(currRow, endRow, currCol, endCol, person, id, cbf) {
 
-			jQuery('.classroom-wrap li[data-row=' + currRow + '][data-col=' + currCol + ']').removeClass('people').find('span.item').html('');
-			jQuery('.classroom-wrap li[data-row=' + currRow + '][data-col=' + (currCol+1) + ']').addClass('people').find('span.item').html(person);
+			if(!jQuery('.classroom-wrap li[data-row=' + currRow + '][data-col=' + (currCol+1) + ']').hasClass('people')) {
+				jQuery('.classroom-wrap li[data-row=' + currRow + '][data-col=' + currCol + ']').removeClass('people').find('span.item').html('');
+				jQuery('.classroom-wrap li[data-row=' + currRow + '][data-col=' + (currCol+1) + ']').addClass('people').find('span.item').html(person);
 
-			app.move.updatePeopleList(currRow, endRow, (currCol+1), endCol, person, id);
+				app.move.updatePeopleList(currRow, endRow, (currCol+1), endCol, person, id);
+			} else {
+				console.log('pass');
+			}
 
 			if(typeof cbf == 'function') {
 				cbf.call(this);
@@ -397,10 +447,14 @@ var app = {
 
 		moveDown: function(currRow, endRow, currCol, endCol, person, id, cbf) {
 
-			jQuery('.classroom-wrap li[data-row=' + currRow + '][data-col=' + currCol + ']').removeClass('people').find('span.item').html('');
-			jQuery('.classroom-wrap li[data-row=' + (currRow+1) + '][data-col=' + currCol + ']').addClass('people').find('span.item').html(person);
+			if(!jQuery('.classroom-wrap li[data-row=' + (currRow+1) + '][data-col=' + currCol + ']').hasClass('people')) {
+				jQuery('.classroom-wrap li[data-row=' + currRow + '][data-col=' + currCol + ']').removeClass('people').find('span.item').html('');
+				jQuery('.classroom-wrap li[data-row=' + (currRow+1) + '][data-col=' + currCol + ']').addClass('people').find('span.item').html(person);
 
-			app.move.updatePeopleList((currRow+1), endRow, currCol, endCol, person, id);
+				app.move.updatePeopleList((currRow+1), endRow, currCol, endCol, person, id);
+			} else {
+				console.log('pass');
+			}
 
 			if(typeof cbf == 'function') {
 				cbf.call(this);
@@ -409,10 +463,15 @@ var app = {
 
 		moveLeft: function(currRow, endRow, currCol, endCol, person, id, cbf) {
 
-			jQuery('.classroom-wrap li[data-row=' + currRow + '][data-col=' + currCol + ']').removeClass('people').find('span.item').html('');
-			jQuery('.classroom-wrap li[data-row=' + currRow + '][data-col=' + (currCol-1) + ']').addClass('people').find('span.item').html(person);
+			if(!jQuery('.classroom-wrap li[data-row=' + currRow + '][data-col=' + (currCol-1) + ']').hasClass('people')) {
 
-			app.move.updatePeopleList(currRow, endRow, (currCol-1), endCol, person, id);
+				jQuery('.classroom-wrap li[data-row=' + currRow + '][data-col=' + currCol + ']').removeClass('people').find('span.item').html('');
+				jQuery('.classroom-wrap li[data-row=' + currRow + '][data-col=' + (currCol-1) + ']').addClass('people').find('span.item').html(person);
+
+				app.move.updatePeopleList(currRow, endRow, (currCol-1), endCol, person, id);
+			} else {
+				console.log('pass');
+			}
 
 			if(typeof cbf == 'function') {
 				cbf.call(this);
