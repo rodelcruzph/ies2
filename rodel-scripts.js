@@ -44,10 +44,6 @@ var app = {
 		});
 
 		app.sortPeople(app.move.movePerson);
-
-		//app.tweenMe();
-
-		/* Init sa magdamag */
 	},
 
 	drawRoom: function(cbf) {
@@ -64,10 +60,61 @@ var app = {
 
 		// Add play/start button
 		playBtn = '<div class="play-btn-holder"> \
-					<a href="javascript:;" class="play-btn">Start</a> \
+						<a href="javascript:;" class="play-btn">Start / Pause</a> \
+						<a href="javascript:;" class="stop-btn">Stop / Reset</a> \
 					</div>';
 
-		jQuery('#main-content').append(playBtn);
+		formHtml = '<div class="form-holder"> \
+						<form> \
+							<p>Room Settings:</p> \
+							<div class="f-group"> \
+								<div class="f-control"> \
+									<label for="room-width">Room Width:</label> \
+								</div> \
+								<div class="f-control"> \
+									<input type="number" id="room-width"> \
+								</div> \
+							</div> \
+							<div class="f-group"> \
+								<div class="f-control"> \
+									<label for="room-height">Room Height:</label> \
+								</div> \
+								<div class="f-control"> \
+									<input type="number" id="room-height"> \
+								</div> \
+							</div> \
+							<div class="f-group"> \
+								<div class="f-control"> \
+									<label for="min-num-people">Min # of people:</label> \
+								</div> \
+								<div class="f-control"> \
+									<input type="number" id="min-num-people"> \
+								</div> \
+							</div> \
+							<div class="f-group"> \
+								<div class="f-control"> \
+									<label for="max-num-people">Max # of people:</label> \
+								</div> \
+								<div class="f-control"> \
+									<input type="number" id="max-num-people"> \
+								</div> \
+							</div> \
+						</form> \
+					</div> \
+					<div class="lower-box"> \
+						<div class="btns-holder"> \
+							<a href="javascript:;" class="play-btn">Start / Pause</a> \
+							<a href="javascript:;" class="stop-btn">Stop / Reset</a> \
+						</div> \
+						<div class="timer-holder"> \
+							<div class="timer"> \
+								<h3>Timer Lapsed</h3> \
+								<p><span id="stop-watch">00:00:00</span></p> \
+							</div> \
+						</div> \
+					</div>';
+
+		jQuery('#main-content').append(formHtml);
 
 		if(typeof cbf == 'function') {
 			app.addPeople(function() {

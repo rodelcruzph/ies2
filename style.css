@@ -140,24 +140,101 @@ body{
 			}
 
 
-/* Play/Start Button */
-.play-btn-holder {
+/* Form */
+.form-holder {
 	text-align: center;
-	padding: 60px 0;
+	width: 100%;
+	max-width: 400px;
+	margin: 40px auto 0;
 }
 
-	.play-btn {
+	.form-holder form {
+		font-size: 0;
+	}
+
+		.form-holder form > p {
+			font-size: 18px;
+		}
+
+		.form-holder form label {
+			font-size: 14px;
+		}
+
+		.f-group {
+			display: block;
+			margin: 0 0 10px;
+			font-size: 0;
+			box-sizing: border-box;
+		}
+
+			.f-control {
+				width: 50%;
+				display: inline-block;
+				vertical-align: middle;
+				box-sizing: border-box;
+				text-align: left;
+			}
+
+			.f-control:fist-child {
+				padding: 0 5px 0 0;
+			}
+
+			.f-control:last-child {
+				padding: 0 0 0 5px;
+			}
+
+				.form-holder form input[type="number"] {
+					width: 100%;
+					height: 33px;
+					border: 1px solid #ddd;
+					border-radius: 0;
+					background: none;
+					padding: 0 5px;
+					box-sizing: border-box;
+
+					font-family: 'Open Sans', sans-serif;
+					font-weight: 400px;
+					font-size: 13px;
+					color: #333;
+
+					-webkit-appearance: none;
+					-moz-appearance: none;
+					appearance: none;
+					outline: 0;
+				}
+
+
+/* Play/Start Button */
+.btns-holder {
+	width: 100%;
+	max-width: 550px;
+	text-align: center;
+	padding: 10px 0;
+	margin: 0 auto;
+	font-size: 0;
+}
+
+	.play-btn,
+	.stop-btn {
 		font-weight: 400;
 		font-size: 18px;
 		color: #fff;
 		text-transform: uppercase;
-		letter-spacing: 4px;
 		display: inline-block;
-		padding: 20px 45px;
+		padding: 5px 10px;
+		margin: 0 20px;
 		background: #1dafec;
 		text-decoration: none;
 		outline: 0;
+		line-height: 1;
 	}
+
+.timer-holder {
+	width: 100%;
+	max-width: 550px;
+	text-align: center;
+	margin: 0 auto;
+}
 
 /*FOOTER*/
 #main-footer{
