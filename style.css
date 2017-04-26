@@ -144,12 +144,16 @@ body{
 .form-holder {
 	text-align: center;
 	width: 100%;
-	max-width: 400px;
-	margin: 40px auto 0;
+	max-width: 1140px;
+	padding: 0 15px;
+	margin: 40px auto;
+	font-size: 0;
 }
 
 	.form-holder form {
 		font-size: 0;
+		display: inline-block;
+		vertical-align: top;
 	}
 
 		.form-holder form > p {
@@ -203,6 +207,11 @@ body{
 					outline: 0;
 				}
 
+		.lower-box {
+			display: inline-block;
+			vertical-align: top;
+		}
+
 
 /* Play/Start Button */
 .btns-holder {
@@ -227,6 +236,7 @@ body{
 		text-decoration: none;
 		outline: 0;
 		line-height: 1;
+		cursor: pointer;
 	}
 
 .timer-holder {
@@ -234,7 +244,12 @@ body{
 	max-width: 550px;
 	text-align: center;
 	margin: 0 auto;
+	font-size: 30px;
 }
+
+	.timer-holder h3 {
+		font-size: 24px;
+	}
 
 /*FOOTER*/
 #main-footer{

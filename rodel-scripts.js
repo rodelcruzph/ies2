@@ -38,12 +38,46 @@ var app = {
 		numOfPeopleToMove: 0
 	},
 
-	init: function() {
+	init: function(c) {
+
 		app.drawRoom(function() {
 			app.addDoors(app.move.getExitDoor());
 		});
 
-		app.sortPeople(app.move.movePerson);
+		app.sortPeople();
+
+		/*app.move.movePerson*/
+
+		if (c == 'function') {
+			c.call(this);
+		}
+
+	},
+
+	setVars: function(cbf) {
+
+		// Check if form is empty
+		var empty;
+		jQuery('.form-holder form input[type="number"]').each(function(){
+			if(jQuery(this).val() == ""){
+				empty = true;
+				return false;
+			}
+		});
+
+		if(empty == true) {
+			alert('Please fill out form completely');
+		} else {
+			app.vars.rows = jQuery('#room-width').val();
+			app.vars.cols = jQuery('#room-height').val();
+			app.vars.minPeople = jQuery('#num-people').val();
+
+			app.init(app.movePerson);
+		}
+
+		if(typeof cbf == 'function') {
+			cbf.call(this);
+		}
 	},
 
 	drawRoom: function(cbf) {
@@ -65,7 +99,7 @@ var app = {
 					</div>';
 
 		formHtml = '<div class="form-holder"> \
-						<form> \
+						<form method="get" action=""> \
 							<p>Room Settings:</p> \
 							<div class="f-group"> \
 								<div class="f-control"> \
@@ -85,36 +119,34 @@ var app = {
 							</div> \
 							<div class="f-group"> \
 								<div class="f-control"> \
-									<label for="min-num-people">Min # of people:</label> \
+									<label for="min-num-people"># of people:</label> \
 								</div> \
 								<div class="f-control"> \
-									<input type="number" id="min-num-people"> \
-								</div> \
-							</div> \
-							<div class="f-group"> \
-								<div class="f-control"> \
-									<label for="max-num-people">Max # of people:</label> \
-								</div> \
-								<div class="f-control"> \
-									<input type="number" id="max-num-people"> \
+									<input type="number" id="num-people"> \
 								</div> \
 							</div> \
 						</form> \
-					</div> \
-					<div class="lower-box"> \
-						<div class="btns-holder"> \
-							<a href="javascript:;" class="play-btn">Start / Pause</a> \
-							<a href="javascript:;" class="stop-btn">Stop / Reset</a> \
-						</div> \
-						<div class="timer-holder"> \
-							<div class="timer"> \
-								<h3>Timer Lapsed</h3> \
-								<p><span id="stop-watch">00:00:00</span></p> \
+						<div class="lower-box"> \
+							<div class="timer-holder"> \
+								<div class="timer"> \
+									<h3>Timer Lapsed</h3> \
+									<p><span id="stop-watch">00:00:00</span></p> \
+								</div> \
+							</div> \
+							<div class="btns-holder"> \
+								<a href="javascript:;" class="play-btn">Start / Pause</a> \
+								<a href="javascript:;" class="stop-btn">Stop / Reset</a> \
 							</div> \
 						</div> \
 					</div>';
 
 		jQuery('#main-content').append(formHtml);
+
+		jQuery('.play-btn').on('click', function(e) {
+			e.preventDefault();
+			e.stopPropagation();
+			app.setVars();
+		});
 
 		if(typeof cbf == 'function') {
 			app.addPeople(function() {
@@ -271,7 +303,7 @@ var app = {
 
 			var x, y, startY, endY, startX, endX, label;
 
-			jQuery('.play-btn').on('click', function() {
+			// jQuery('.play-btn').on('click', function() {
 
 				app.vars.startMove = setInterval(function() {
 
@@ -303,6 +335,8 @@ var app = {
 					}
 
 				}, app.vars.timeInter);
+
+			// });
 
 
 
@@ -344,8 +378,6 @@ var app = {
 					}
 
 				}, app.vars.timeInter);*/
-			});
-
 		},
 
 		getDirection: function(currRow, endRow, currCol, endCol, person, id, cbf) {
