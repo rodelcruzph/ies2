@@ -1,6 +1,50 @@
 ( function($) {
 	
 	jQuery(document).ready( function() {
+
+		/*var Example1 = new (function() {
+			// Stopwatch element on the page
+			var $stopwatch;
+
+			// Timer speed in milliseconds
+			var incrementTime = 70;
+
+			// Current timer position in milliseconds
+			var currentTime = 0;
+
+			// Start the timer
+			this.startStopwatch = function() {
+				$stopwatch = jQuery('#stop-watch');
+				Example1.Timer = jQuery.timer(updateTimer, incrementTime, false);  
+			};
+
+			// Output time and increment
+			function updateTimer() {
+				var timeString = formatTime(currentTime);
+				$stopwatch.html(timeString);
+				currentTime += incrementTime;
+			}
+
+			// Reset timer
+			this.resetStopwatch = function() {
+				currentTime = 0;
+				Example1.Timer.stop().once();
+			};
+
+			function pad(number, length) {
+				var str = '' + number;
+				while (str.length < length) {str = '0' + str;}
+				return str;
+			}
+
+			function formatTime(time) {
+				time = time / 10;
+				var min = parseInt(time / 6000),
+					sec = parseInt(time / 100) - (min * 60),
+					hundredths = pad(time - (sec * 100) - (min * 6000), 2);
+				return (min > 0 ? pad(min, 2) : "00") + ":" + pad(sec, 2) + ":" + hundredths;
+			}
+		});*/
 		
 		app.init();
 
@@ -176,8 +220,8 @@ var app = {
 								</div> \
 							</div> \
 							<div class="btns-holder"> \
-								<a href="javascript:;" class="play-btn">Start / Pause</a> \
-								<a href="javascript:;" class="stop-btn">Stop / Reset</a> \
+								<a href="javascript:;" class="play-btn">Start</a> \
+								<a href="javascript:;" class="stop-btn">Stop</a> \
 							</div> \
 						</div> \
 					</div>';
@@ -194,6 +238,8 @@ var app = {
 				});
 
 				app.init(app.sortPeople(app.move.getExitDoor()));
+
+				/*app.timer();*/
 			});
 		});
 
@@ -203,6 +249,8 @@ var app = {
 
 			/*app.init(app.movePerson);*/
 			app.move.movePerson();
+
+			app.timer();
 		});
 
 		if(typeof cbf == 'function') {
@@ -420,6 +468,7 @@ var app = {
 
 					} else {
 						clearInterval(app.vars.startMove);
+						app.timer.Timer.stop();
 					}
 
 				}, app.vars.timeInter);
@@ -647,14 +696,52 @@ var app = {
 		updatePeopleList: function(currRow, endRow, currCol, endCol, person, id) {
 			app.vars.sortedPeople[id].currRow = currRow;
 			app.vars.sortedPeople[id].currCol = currCol;
-		},
-
-		isFree: function() {
-
 		}
 	},
 
-	tweenMe: function() {
+	timer: function() {
+		
+			// Stopwatch element on the page
+			var $stopwatch;
+
+			// Timer speed in milliseconds
+			var incrementTime = 70;
+
+			// Current timer position in milliseconds
+			var currentTime = 0;
+
+			// Start the timer
+			jQuery(function() {
+				$stopwatch = jQuery('#stop-watch');
+				app.timer.Timer = jQuery.timer(updateTimer, incrementTime, true);  
+			});
+
+			// Output time and increment
+			function updateTimer() {
+				var timeString = formatTime(currentTime);
+				$stopwatch.html(timeString);
+				currentTime += incrementTime;
+			}
+
+			// Reset timer
+			this.resetStopwatch = function() {
+				currentTime = 0;
+				app.timer.Timer.stop().once();
+			};
+
+			function pad(number, length) {
+				var str = '' + number;
+				while (str.length < length) {str = '0' + str;}
+				return str;
+			}
+
+			function formatTime(time) {
+				time = time / 10;
+				var min = parseInt(time / 6000),
+					sec = parseInt(time / 100) - (min * 60),
+					hundredths = pad(time - (sec * 100) - (min * 6000), 2);
+				return (min > 0 ? pad(min, 2) : "00") + ":" + pad(sec, 2) + ":" + hundredths;
+			}
 		
 	}
 
