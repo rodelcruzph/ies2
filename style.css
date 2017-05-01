@@ -179,6 +179,10 @@ body{
 				text-align: left;
 			}
 
+			.doors .f-control {
+				vertical-align: top;
+			}
+
 			.f-control:fist-child {
 				padding: 0 5px 0 0;
 			}
@@ -197,7 +201,7 @@ body{
 					box-sizing: border-box;
 
 					font-family: 'Open Sans', sans-serif;
-					font-weight: 400px;
+					font-weight: 400;
 					font-size: 13px;
 					color: #333;
 
@@ -206,6 +210,24 @@ body{
 					appearance: none;
 					outline: 0;
 				}
+
+				.f-control:last-child input[type="number"]:first-child {
+					margin-bottom: 5px;
+				}
+
+				.form-holder form .doors {
+					padding: 3px 0;
+				}
+
+					.form-holder form .doors p {
+						font-size: 14px;
+						margin: 2px 0 10px;
+					}
+
+					.form-holder form .doors label {
+						display: block;
+						margin: 3px 0;
+					}
 
 		.lower-box {
 			display: inline-block;
@@ -223,6 +245,7 @@ body{
 	font-size: 0;
 }
 
+	.draw-btn,
 	.play-btn,
 	.stop-btn {
 		font-weight: 400;

@@ -15,18 +15,17 @@ var app = {
 		cols: 6,
 		doors: {
 			1: {
-				x: 3, // x must less than or equal to number of cols
+				x: 1, // x must less than or equal to number of cols
 				y: 6, // y must be less than or equal to number rows
 				face: 'right'
 			},
 			2: {
-				x: 4,
+				x: 2,
 				y: 6,
 				face: 'right'
 			}
 		},
-		minPeople: 10,
-		maxPeople: 10,
+		numOfPeople: 10,
 		people: {},
 		sortedPeople: [{}],
 		timeInter: 360,
@@ -40,11 +39,13 @@ var app = {
 
 	init: function(c) {
 
-		app.drawRoom(function() {
-			app.addDoors(app.move.getExitDoor());
-		});
+		app.renderForm();
 
-		app.sortPeople();
+		// app.renderForm(function() {
+		// 	app.addDoors(app.move.getExitDoor());
+		// });
+
+		/*app.sortPeople();*/
 
 		/*app.move.movePerson*/
 
@@ -57,7 +58,10 @@ var app = {
 	setVars: function(cbf) {
 
 		// Check if form is empty
-		var empty;
+		var empty,
+			doorOne = jQuery('input[name="d1f"]:checked').length,
+			doorTwo = jQuery('input[name="d2f"]:checked').length;
+
 		jQuery('.form-holder form input[type="number"]').each(function(){
 			if(jQuery(this).val() == ""){
 				empty = true;
@@ -65,14 +69,24 @@ var app = {
 			}
 		});
 
+		// if (doorOne == 0 || doorTwo == 0) {
+		// 	emptry = true;
+		// }
+
 		if(empty == true) {
 			alert('Please fill out form completely');
+			return;
 		} else {
 			app.vars.rows = jQuery('#room-width').val();
 			app.vars.cols = jQuery('#room-height').val();
-			app.vars.minPeople = jQuery('#num-people').val();
+			app.vars.numOfPeople = jQuery('#num-people').val();
+			app.vars.doors[1].x = jQuery('#door-one-x').val();
+			app.vars.doors[1].y = jQuery('#door-one-y').val();
+			app.vars.doors[1].face = jQuery('input[type=radio][name=d1f]:checked').attr('id').replace('d1f-', '');
 
-			app.init(app.movePerson);
+			app.vars.doors[2].x = jQuery('#door-two-x').val();
+			app.vars.doors[2].y = jQuery('#door-two-y').val();
+			app.vars.doors[2].face = jQuery('input[type=radio][name=d2f]:checked').attr('id').replace('d2f-', '');
 		}
 
 		if(typeof cbf == 'function') {
@@ -80,17 +94,8 @@ var app = {
 		}
 	},
 
-	drawRoom: function(cbf) {
-		jQuery('#classroom').css({
-			width: app.vars.boxDim * app.vars.cols,
-			height: app.vars.boxDim * app.vars.rows
-		});
-
-		for(var j = 1; j <= app.vars.rows; j++) {
-			for(var i = 1; i <= app.vars.cols; i++) {
-				jQuery('<li data-row="'+j+'" data-col="'+i+'" class="tileBox" style="width:'+ app.vars.boxDim +'px; height:'+ app.vars.boxDim +'px;"><span class="item"></span></li>').appendTo('.classroom-wrap');
-			}
-		}
+	renderForm: function(cbf) {
+		/*jQuery('#main-content #number').append('<div id="classroom"></div');*/
 
 		// Add play/start button
 		playBtn = '<div class="play-btn-holder"> \
@@ -125,6 +130,43 @@ var app = {
 									<input type="number" id="num-people"> \
 								</div> \
 							</div> \
+							<div class="f-group doors"> \
+								<div class="f-control"> \
+									<label for="door-one-x">Exit Door 1:</label> \
+								</div> \
+								<div class="f-control"> \
+									<input type="number" id="door-one-x"> \
+									<input type="number" id="door-one-y"> \
+									\
+									<div class="doors"> \
+										<p>Orientation: </p> \
+										<label for="d1f-top"><input type="radio" name="d1f" id="d1f-top"> Top</label> \
+										<label for="d1f-right"><input type="radio" name="d1f" id="d1f-right"> Right</label> \
+										<label for="d1f-bottom"><input type="radio" name="d1f" id="d1f-bottom"> Bottom</label> \
+										<label for="d1f-left"><input type="radio" name="d1f" id="d1f-left"> Left</label> \
+									</div> \
+								</div> \
+							</div> \
+							<div class="f-group doors"> \
+								<div class="f-control"> \
+									<label for="door-two-x">Exit Door 2:</label> \
+								</div> \
+								<div class="f-control"> \
+									<input type="number" id="door-two-x"> \
+									<input type="number" id="door-two-y"> \
+									\
+									<div class="doors"> \
+										<p>Orientation: </p> \
+										<label for="d2f-top"><input type="radio" name="d2f" id="d2f-top"> Top</label> \
+										<label for="d2f-right"><input type="radio" name="d2f" id="d2f-right"> Right</label> \
+										<label for="d2f-bottom"><input type="radio" name="d2f" id="d2f-bottom"> Bottom</label> \
+										<label for="d2f-left"><input type="radio" name="d2f" id="d2f-left"> Left</label> \
+									</div> \
+								</div> \
+							</div> \
+							<div class="f-group"> \
+								<a href="javascript:;" class="draw-btn">Draw Room</a> \
+							</div> \
 						</form> \
 						<div class="lower-box"> \
 							<div class="timer-holder"> \
@@ -142,16 +184,57 @@ var app = {
 
 		jQuery('#main-content').append(formHtml);
 
+		jQuery('.draw-btn').on('click', function() {
+
+			app.setVars(function() {
+				app.drawRoom(function() {
+					jQuery('.form-holder').remove();
+					app.addDoors(app.addPeople());
+					/*app.addDoors(app.move.getExitDoor());*/
+				});
+
+				app.init(app.sortPeople(app.move.getExitDoor()));
+			});
+		});
+
 		jQuery('.play-btn').on('click', function(e) {
 			e.preventDefault();
 			e.stopPropagation();
-			app.setVars();
+
+			/*app.init(app.movePerson);*/
+			app.move.movePerson();
 		});
 
 		if(typeof cbf == 'function') {
-			app.addPeople(function() {
-				cbf.call(this);
-			});
+			cbf.call(this);
+		}
+	},
+
+	drawRoom: function(c) {
+
+		jQuery('#main-box').html('');
+
+		var room = '<div id="number"></div> \
+						<div id="classroom"> \
+							<ul class="classroom-wrap"> \
+							</ul> \
+						</div>';
+
+		jQuery('#main-box').append(room);
+
+		jQuery('#classroom').css({
+			width: app.vars.boxDim * app.vars.cols,
+			height: app.vars.boxDim * app.vars.rows
+		});
+
+		for(var j = 1; j <= app.vars.rows; j++) {
+			for(var i = 1; i <= app.vars.cols; i++) {
+				jQuery('<li data-row="'+j+'" data-col="'+i+'" class="tileBox" style="width:'+ app.vars.boxDim +'px; height:'+ app.vars.boxDim +'px;"><span class="item"></span></li>').appendTo('.classroom-wrap');
+			}
+		}
+
+		if(typeof c == 'function') {
+			c.call(this);
 		}
 	},
 
@@ -191,9 +274,12 @@ var app = {
 
 	addPeople: function(cbf) {
 
-		var minPeople = app.vars.minPeople;
+		/*var minPeople = app.vars.minPeople;
 		var maxPeople = app.vars.maxPeople;
-		var currPeople = Math.floor(Math.random()* (maxPeople - minPeople + 1) + minPeople);
+		var currPeople = Math.floor(Math.random()* (maxPeople - minPeople + 1) + minPeople);*/
+
+		var currPeople = app.vars.numOfPeople;
+
 		jQuery('#number').text(currPeople + ' people');
 
 		var randomElements = jQuery("li").get().sort(function(){ 
@@ -207,6 +293,8 @@ var app = {
 			jQuery(randomElements[i]).addClass('people').find('span.item').html(i+1);
 			jQuery(randomElements[i]).attr('id', i+1);
 		}
+
+		app.getPeople();
 
 		if(typeof cbf == 'function') {
 			app.getPeople(function() {
