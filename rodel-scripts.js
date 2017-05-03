@@ -256,7 +256,7 @@ var app = {
 			}
 		}
 
-		jQuery('#area').html('Area: ' + app.vars.area + ' meters');
+		jQuery('#area').html('Area: ' + app.vars.area + ' sq. m.');
 
 		if(typeof c == 'function') {
 			c.call(this);
