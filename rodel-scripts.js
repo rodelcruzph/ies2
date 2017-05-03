@@ -72,7 +72,7 @@ var app = {
 		numOfPeople: 10,
 		people: {},
 		sortedPeople: [{}],
-		timeInter: 150,
+		timeInter: 100,
 		dtd: {},
 		currStep: 0,
 		maxSteps: 0,
