@@ -120,7 +120,7 @@ var app = {
 			app.vars.cols = jQuery('#room-height').val() * 2;
 			app.vars.numOfPeople = jQuery('#num-people').val();
 
-			app.vars.area = app.vars.rows * app.vars.cols;
+			app.vars.area = jQuery('#room-width').val() * jQuery('#room-height').val();
 		}
 
 		app.generateDoors();
