@@ -45,6 +45,13 @@ body{
 	display: block;
 	padding: 20px 0;
 }
+
+#area {
+	font-size: 30px;
+	text-align: center;
+	padding: 0 0 40px;
+}
+
 #classroom{
 	position: relative;
 	text-align: center;

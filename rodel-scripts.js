@@ -54,7 +54,7 @@
 
 var app = {
 	vars: {
-		boxDim: 50,
+		boxDim: 25,
 		rows: 6,
 		cols: 6,
 		doors: {
@@ -72,13 +72,14 @@ var app = {
 		numOfPeople: 10,
 		people: {},
 		sortedPeople: [{}],
-		timeInter: 360,
+		timeInter: 150,
 		dtd: {},
 		currStep: 0,
 		maxSteps: 0,
 		startMove: '',
 		currPerson: 0,
-		numOfPeopleToMove: 0
+		numOfPeopleToMove: 0,
+		area: 0
 	},
 
 	init: function(c) {
@@ -102,9 +103,7 @@ var app = {
 	setVars: function(cbf) {
 
 		// Check if form is empty
-		var empty,
-			doorOne = jQuery('input[name="d1f"]:checked').length,
-			doorTwo = jQuery('input[name="d2f"]:checked').length;
+		var empty;
 
 		jQuery('.form-holder form input[type="number"]').each(function(){
 			if(jQuery(this).val() == ""){
@@ -113,29 +112,38 @@ var app = {
 			}
 		});
 
-		// if (doorOne == 0 || doorTwo == 0) {
-		// 	emptry = true;
-		// }
-
 		if(empty == true) {
 			alert('Please fill out form completely');
 			return;
 		} else {
-			app.vars.rows = jQuery('#room-width').val();
-			app.vars.cols = jQuery('#room-height').val();
+			app.vars.rows = jQuery('#room-width').val() * 2;
+			app.vars.cols = jQuery('#room-height').val() * 2;
 			app.vars.numOfPeople = jQuery('#num-people').val();
-			app.vars.doors[1].x = jQuery('#door-one-x').val();
-			app.vars.doors[1].y = jQuery('#door-one-y').val();
-			app.vars.doors[1].face = jQuery('input[type=radio][name=d1f]:checked').attr('id').replace('d1f-', '');
 
-			app.vars.doors[2].x = jQuery('#door-two-x').val();
-			app.vars.doors[2].y = jQuery('#door-two-y').val();
-			app.vars.doors[2].face = jQuery('input[type=radio][name=d2f]:checked').attr('id').replace('d2f-', '');
+			app.vars.area = app.vars.rows * app.vars.cols;
 		}
+
+		app.generateDoors();
 
 		if(typeof cbf == 'function') {
 			cbf.call(this);
 		}
+	},
+
+	generateDoors: function() {
+		let mid;
+
+		if(app.vars.rows > 2) {
+			mid = app.vars.rows / 2;
+		} else {
+			mid = 1;
+		}
+
+		app.vars.doors[1].x = mid;
+		app.vars.doors[1].y = app.vars.cols;
+
+		app.vars.doors[2].x = mid + 1;
+		app.vars.doors[2].y = app.vars.cols;
 	},
 
 	renderForm: function(cbf) {
@@ -152,7 +160,7 @@ var app = {
 							<p>Room Settings:</p> \
 							<div class="f-group"> \
 								<div class="f-control"> \
-									<label for="room-width">Room Width:</label> \
+									<label for="room-width">Width: (meters)</label> \
 								</div> \
 								<div class="f-control"> \
 									<input type="number" id="room-width"> \
@@ -160,7 +168,7 @@ var app = {
 							</div> \
 							<div class="f-group"> \
 								<div class="f-control"> \
-									<label for="room-height">Room Height:</label> \
+									<label for="room-height">Length: (meters)</label> \
 								</div> \
 								<div class="f-control"> \
 									<input type="number" id="room-height"> \
@@ -172,40 +180,6 @@ var app = {
 								</div> \
 								<div class="f-control"> \
 									<input type="number" id="num-people"> \
-								</div> \
-							</div> \
-							<div class="f-group doors"> \
-								<div class="f-control"> \
-									<label for="door-one-x">Exit Door 1:</label> \
-								</div> \
-								<div class="f-control"> \
-									<input type="number" id="door-one-x"> \
-									<input type="number" id="door-one-y"> \
-									\
-									<div class="doors"> \
-										<p>Orientation: </p> \
-										<label for="d1f-top"><input type="radio" name="d1f" id="d1f-top"> Top</label> \
-										<label for="d1f-right"><input type="radio" name="d1f" id="d1f-right"> Right</label> \
-										<label for="d1f-bottom"><input type="radio" name="d1f" id="d1f-bottom"> Bottom</label> \
-										<label for="d1f-left"><input type="radio" name="d1f" id="d1f-left"> Left</label> \
-									</div> \
-								</div> \
-							</div> \
-							<div class="f-group doors"> \
-								<div class="f-control"> \
-									<label for="door-two-x">Exit Door 2:</label> \
-								</div> \
-								<div class="f-control"> \
-									<input type="number" id="door-two-x"> \
-									<input type="number" id="door-two-y"> \
-									\
-									<div class="doors"> \
-										<p>Orientation: </p> \
-										<label for="d2f-top"><input type="radio" name="d2f" id="d2f-top"> Top</label> \
-										<label for="d2f-right"><input type="radio" name="d2f" id="d2f-right"> Right</label> \
-										<label for="d2f-bottom"><input type="radio" name="d2f" id="d2f-bottom"> Bottom</label> \
-										<label for="d2f-left"><input type="radio" name="d2f" id="d2f-left"> Left</label> \
-									</div> \
 								</div> \
 							</div> \
 							<div class="f-group"> \
@@ -263,6 +237,7 @@ var app = {
 		jQuery('#main-box').html('');
 
 		var room = '<div id="number"></div> \
+						<div id="area"></div> \
 						<div id="classroom"> \
 							<ul class="classroom-wrap"> \
 							</ul> \
@@ -280,6 +255,8 @@ var app = {
 				jQuery('<li data-row="'+j+'" data-col="'+i+'" class="tileBox" style="width:'+ app.vars.boxDim +'px; height:'+ app.vars.boxDim +'px;"><span class="item"></span></li>').appendTo('.classroom-wrap');
 			}
 		}
+
+		jQuery('#area').html('Area: ' + app.vars.area + ' meters');
 
 		if(typeof c == 'function') {
 			c.call(this);
