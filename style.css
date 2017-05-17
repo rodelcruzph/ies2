@@ -169,6 +169,7 @@ body{
 
 		.form-holder form label {
 			font-size: 14px;
+			cursor: pointer;
 		}
 
 		.f-group {
@@ -240,6 +241,38 @@ body{
 			display: inline-block;
 			vertical-align: top;
 		}
+
+
+		.door-num {
+			margin: 0 0 15px;
+		}
+
+		.df-select {
+			margin: 0 0 10px;
+		}
+
+			.df-select select {
+				width: 100%;
+				height: 33px;
+				border: 1px solid #ddd;
+				border-radius: 0;
+				background: none;
+				padding: 0 5px;
+				box-sizing: border-box;
+
+				font-family: 'Open Sans', sans-serif;
+				font-weight: 400;
+				font-size: 13px;
+				color: #333;
+
+				outline: 0;
+			}
+
+			.df-radio label {
+				display: block;
+			}
+
+
 
 
 /* Play/Start Button */

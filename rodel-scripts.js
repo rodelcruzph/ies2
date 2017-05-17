@@ -183,6 +183,52 @@ var app = {
 								</div> \
 							</div> \
 							<div class="f-group"> \
+								<div class="f-control"> \
+									<label for="doof-info">Door</label> \
+								</div> \
+								<div class="f-control"> \
+									<div class="door-num"> \
+										<p> \
+											<label for="dc-one"> \
+												<input type="radio" name="door-count" value="1" id="dc-one"> 1 Door \
+											</label> \
+										</p> \
+										<p> \
+											<label for="dc-two"> \
+												<input type="radio" name="door-count" value="2" id="dc-two"> 2 Doors \
+											</label> \
+										</p> \
+									</div> \
+									<div class="door-face"> \
+										<div class="df-select"> \
+											<select name="face-select" id="face-select"> \
+												<option value="1">Upper</option> \
+												<option value="2">Lower</option> \
+												<option value="3">Left</option> \
+												<option value="4">Right</option> \
+											</select> \
+										</div> \
+										<div class="df-radio"> \
+											<label for="dfrt"> \
+												<input type="radio" name="dfr" value="1" id="dfrt"> Top \
+											</label> \
+											<label for="dfrb"> \
+												<input type="radio" name="dfr" value="2" id="dfrb"> Bottom \
+											</label> \
+											<label for="dfrl"> \
+												<input type="radio" name="dfr" value="3" id="dfrl"> Left \
+											</label> \
+											<label for="dfrr"> \
+												<input type="radio" name="dfr" value="4" id="dfrr"> Right \
+											</label> \
+											<label for="dfrc"> \
+												<input type="radio" name="dfr" value="4" id="dfrc"> Center \
+											</label> \
+										</div> \
+									</div> \
+								</div> \
+							</div> \
+							<div class="f-group"> \
 								<a href="javascript:;" class="draw-btn">Draw Room</a> \
 							</div> \
 						</form> \
