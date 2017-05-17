@@ -112,6 +112,15 @@ var app = {
 			}
 		});
 
+		if(!jQuery('input[name="door-count"]').is(':checked')) {
+			empty = true;
+		}
+
+		if(!jQuery('input[name="dfr"]').is(':checked')) {
+			empty = true;
+		}
+		
+
 		if(empty == true) {
 			alert('Please fill out form completely');
 			return;
