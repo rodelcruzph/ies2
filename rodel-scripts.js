@@ -57,10 +57,11 @@ var app = {
 		boxDim: 25,
 		rows: 6,
 		cols: 6,
-		doors: {
+		doors: {},
+		/*doors: {
 			1: {
-				x: 1, // x must less than or equal to number of cols
-				y: 6, // y must be less than or equal to number rows
+				x: 1, x must less than or equal to number of cols
+				y: 6, y must be less than or equal to number rows
 				face: 'right'
 			},
 			2: {
@@ -68,7 +69,7 @@ var app = {
 				y: 6,
 				face: 'right'
 			}
-		},
+		},*/
 		numOfPeople: 10,
 		people: {},
 		sortedPeople: [{}],
@@ -130,6 +131,8 @@ var app = {
 			app.vars.numOfPeople = jQuery('#num-people').val();
 
 			app.vars.area = jQuery('#room-width').val() * jQuery('#room-height').val();
+
+			app.setDoorVar(jQuery('input[name="door-count"]:checked').attr('value'), jQuery('#face-select').val());
 		}
 
 		app.generateDoors();
@@ -137,6 +140,11 @@ var app = {
 		if(typeof cbf == 'function') {
 			cbf.call(this);
 		}
+	},
+
+	setDoorVar: function(num, dir) {
+
+		console.log(num + ':' + dir);
 	},
 
 	generateDoors: function() {
