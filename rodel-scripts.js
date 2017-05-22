@@ -132,19 +132,115 @@ var app = {
 
 			app.vars.area = jQuery('#room-width').val() * jQuery('#room-height').val();
 
-			app.setDoorVar(jQuery('input[name="door-count"]:checked').attr('value'), jQuery('#face-select').val());
+			app.setDoorVar(jQuery('input[name="door-count"]:checked').attr('value'), jQuery('#face-select').val(), jQuery('input[name="dfr"]:checked').attr('value'));
 		}
 
-		app.generateDoors();
+		//app.generateDoors();
 
 		if(typeof cbf == 'function') {
 			cbf.call(this);
 		}
 	},
 
-	setDoorVar: function(num, dir) {
+	setDoorVar: function(num, dir, pos) {
 
-		console.log(num + ':' + dir);
+		console.log('num: ' + num + ', dir: ' + dir + ', pos: ' + pos);
+		console.log(app.vars.rows + ' : ' + app.vars.cols);
+
+		// instantiate object
+		for(var i = 1; i <= num; i++) {
+			app.vars.doors[i] = {};
+		}
+
+
+		// create doors object
+		for(var i = 1; i <= num; i++) {
+
+			// door location
+			switch(dir) {
+				case '1':
+					// Upper
+					console.log('top \n');
+					app.vars.doors[i].x = 1;
+					break;
+
+				case '2':
+					// Lower
+					console.log('bottom \n');
+					app.vars.doors[i].x = app.vars.cols;
+					break;
+
+				case '3':
+					// Left
+					console.log('left \n');
+					app.vars.doors[i].y = 1;
+					break;
+
+				case '4':
+					// Right
+					console.log('right \n');
+					app.vars.doors[i].y = app.vars.rows;
+					break;
+			}
+
+			// door position
+			switch(pos) {
+				case '1':
+					// Top
+					app.vars.doors[i].x = 1;
+					app.vars.doors[i].face = 'top';
+					break;
+
+				case '2':
+					// Bottom
+					app.vars.doors[i].x = app.vars.cols;
+					app.vars.doors[i].face = 'bottom';
+					break;
+
+				case '3':
+					// Left
+					app.vars.doors[i].y = 1;
+					app.vars.doors[i].face = 'left';
+					break;
+
+				case '4':
+					// Right
+					app.vars.doors[i].y = app.vars.rows;
+					app.vars.doors[i].face = 'right';
+					break;
+
+				case '5':
+					// Center
+					if(dir == '1' || dir == '2') {
+						if (i == 1) {
+							app.vars.doors[i].y = Math.floor(app.vars.rows / 2);
+						} else {
+							app.vars.doors[i].y = Math.floor(app.vars.rows / 2) + 1;
+						}
+
+						if(dir == '1') {
+							app.vars.doors[i].face = 'top';
+						} else {
+							app.vars.doors[i].face = 'bottom';
+						}
+
+					} else if(dir == '3' || dir == '4') {
+						if (i == 1) {
+							app.vars.doors[i].x = Math.floor(app.vars.cols / 2);
+						} else {
+							app.vars.doors[i].x = Math.floor(app.vars.cols / 2) + 1;
+						}
+
+						if(dir == '3') {
+							app.vars.doors[i].face = 'left';
+						} else {
+							app.vars.doors[i].face = 'right';
+						}
+					}
+					break;
+			}
+		}
+
 	},
 
 	generateDoors: function() {
@@ -239,7 +335,7 @@ var app = {
 												<input type="radio" name="dfr" value="4" id="dfrr"> Right \
 											</label> \
 											<label for="dfrc"> \
-												<input type="radio" name="dfr" value="4" id="dfrc"> Center \
+												<input type="radio" name="dfr" value="5" id="dfrc"> Center \
 											</label> \
 										</div> \
 									</div> \
