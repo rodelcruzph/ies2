@@ -160,26 +160,30 @@ var app = {
 			switch(dir) {
 				case '1':
 					// Upper
-					console.log('top \n');
+					console.log('face top \n');
 					app.vars.doors[i].x = 1;
+					app.vars.doors[i].face = 'top';
 					break;
 
 				case '2':
 					// Lower
-					console.log('bottom \n');
+					console.log('face bottom \n');
 					app.vars.doors[i].x = app.vars.cols;
+					app.vars.doors[i].face = 'bottom';
 					break;
 
 				case '3':
 					// Left
-					console.log('left \n');
+					console.log('face left \n');
 					app.vars.doors[i].y = 1;
+					app.vars.doors[i].face = 'left';
 					break;
 
 				case '4':
 					// Right
-					console.log('right \n');
+					console.log('face right \n');
 					app.vars.doors[i].y = app.vars.rows;
+					app.vars.doors[i].face = 'right';
 					break;
 			}
 
@@ -187,26 +191,38 @@ var app = {
 			switch(pos) {
 				case '1':
 					// Top
-					app.vars.doors[i].x = 1;
-					app.vars.doors[i].face = 'top';
+					if (i == 1) {
+						app.vars.doors[i].x = 1;
+					} else {
+						app.vars.doors[i].x = 2;
+					}
 					break;
 
 				case '2':
 					// Bottom
-					app.vars.doors[i].x = app.vars.cols;
-					app.vars.doors[i].face = 'bottom';
+					if (i == 1) {
+						app.vars.doors[i].x = app.vars.cols;
+					} else {
+						app.vars.doors[i].x = app.vars.cols - 1;
+					}
 					break;
 
 				case '3':
 					// Left
-					app.vars.doors[i].y = 1;
-					app.vars.doors[i].face = 'left';
+					if (i == 1) {
+						app.vars.doors[i].y = 1;
+					} else {
+						app.vars.doors[i].y = 2;
+					}
 					break;
 
 				case '4':
 					// Right
-					app.vars.doors[i].y = app.vars.rows;
-					app.vars.doors[i].face = 'right';
+					if (i == 1) {
+						app.vars.doors[i].y = app.vars.rows;
+					} else {
+						app.vars.doors[i].y = app.vars.rows - 1;
+					}
 					break;
 
 				case '5':
