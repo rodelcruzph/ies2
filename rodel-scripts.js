@@ -1,50 +1,6 @@
 ( function($) {
 	
 	jQuery(document).ready( function() {
-
-		/*var Example1 = new (function() {
-			// Stopwatch element on the page
-			var $stopwatch;
-
-			// Timer speed in milliseconds
-			var incrementTime = 70;
-
-			// Current timer position in milliseconds
-			var currentTime = 0;
-
-			// Start the timer
-			this.startStopwatch = function() {
-				$stopwatch = jQuery('#stop-watch');
-				Example1.Timer = jQuery.timer(updateTimer, incrementTime, false);  
-			};
-
-			// Output time and increment
-			function updateTimer() {
-				var timeString = formatTime(currentTime);
-				$stopwatch.html(timeString);
-				currentTime += incrementTime;
-			}
-
-			// Reset timer
-			this.resetStopwatch = function() {
-				currentTime = 0;
-				Example1.Timer.stop().once();
-			};
-
-			function pad(number, length) {
-				var str = '' + number;
-				while (str.length < length) {str = '0' + str;}
-				return str;
-			}
-
-			function formatTime(time) {
-				time = time / 10;
-				var min = parseInt(time / 6000),
-					sec = parseInt(time / 100) - (min * 60),
-					hundredths = pad(time - (sec * 100) - (min * 6000), 2);
-				return (min > 0 ? pad(min, 2) : "00") + ":" + pad(sec, 2) + ":" + hundredths;
-			}
-		});*/
 		
 		app.init();
 
@@ -58,18 +14,6 @@ var app = {
 		rows: 6,
 		cols: 6,
 		doors: {},
-		/*doors: {
-			1: {
-				x: 1, x must less than or equal to number of cols
-				y: 6, y must be less than or equal to number rows
-				face: 'right'
-			},
-			2: {
-				x: 2,
-				y: 6,
-				face: 'right'
-			}
-		},*/
 		numOfPeople: 10,
 		people: {},
 		sortedPeople: [{}],
@@ -86,14 +30,6 @@ var app = {
 	init: function(c) {
 
 		app.renderForm();
-
-		// app.renderForm(function() {
-		// 	app.addDoors(app.move.getExitDoor());
-		// });
-
-		/*app.sortPeople();*/
-
-		/*app.move.movePerson*/
 
 		if (c == 'function') {
 			c.call(this);
@@ -134,8 +70,6 @@ var app = {
 
 			app.setDoorVar(jQuery('input[name="door-count"]:checked').attr('value'), jQuery('#face-select').val(), jQuery('input[name="dfr"]:checked').attr('value'));
 		}
-
-		//app.generateDoors();
 
 		if(typeof cbf == 'function') {
 			cbf.call(this);
@@ -276,14 +210,8 @@ var app = {
 	},
 
 	renderForm: function(cbf) {
-		/*jQuery('#main-content #number').append('<div id="classroom"></div');*/
 
-		// Add play/start button
-		playBtn = '<div class="play-btn-holder"> \
-						<a href="javascript:;" class="play-btn">Start / Pause</a> \
-						<a href="javascript:;" class="stop-btn">Stop / Reset</a> \
-					</div>';
-
+		// Add form
 		formHtml = '<div class="form-holder"> \
 						<form method="get" action=""> \
 							<p>Room Settings:</p> \
@@ -383,12 +311,11 @@ var app = {
 				app.drawRoom(function() {
 					jQuery('.form-holder').remove();
 					app.addDoors(app.addPeople());
-					/*app.addDoors(app.move.getExitDoor());*/
 				});
 
 				//app.init(app.sortPeople(app.move.getExitDoor()));
 
-				app.init();
+				app.init(app.sortPeople(app.getExitDoor()));
 
 				/*app.timer();*/
 			});
@@ -398,7 +325,6 @@ var app = {
 			e.preventDefault();
 			e.stopPropagation();
 
-			/*app.init(app.movePerson);*/
 			app.move.movePerson();
 
 			app.timer();
@@ -476,10 +402,6 @@ var app = {
 
 	addPeople: function(cbf) {
 
-		/*var minPeople = app.vars.minPeople;
-		var maxPeople = app.vars.maxPeople;
-		var currPeople = Math.floor(Math.random()* (maxPeople - minPeople + 1) + minPeople);*/
-
 		var currPeople = app.vars.numOfPeople;
 
 		jQuery('#number').text(currPeople + ' people');
@@ -488,15 +410,12 @@ var app = {
 			  return Math.round(Math.random())-0.5
 			}).slice(0,currPeople);
 
-		// people = "<span class='people-item'></span>",
-
 		for(var i = 0; i < randomElements.length; i++) {
-			// jQuery(randomElements[i]).addClass('people').append("<span class='item'>" + (i+1) + "</span>");
 			jQuery(randomElements[i]).addClass('people').find('span.item').html(i+1);
 			jQuery(randomElements[i]).attr('id', i+1);
 		}
 
-		app.getPeople();
+			app.getPeople();
 
 		if(typeof cbf == 'function') {
 			app.getPeople(function() {
@@ -512,13 +431,14 @@ var app = {
 		jQuery('.classroom-wrap li').each(function() {
 			if(jQuery(this).hasClass('people')) {
 
-
+				people[i-1] = new person();
 
 				app.vars.people[i] = {
 					'colCoords': jQuery(this).data('col'),
 					'rowCoords': jQuery(this).data('row'),
 					'num': jQuery(this).attr('id')
 				}
+
 				i += 1;
 			}
 		});
@@ -530,525 +450,228 @@ var app = {
 
 	sortPeople: function(cbf) {
 		var exitDoors = Object.keys(app.vars.dtd).length,
-			numOfPeople = Object.keys(app.vars.people).length;
+			numOfPeople = Object.keys(app.vars.people).length,
+			k = 0;
 
-		for(var j = 0; j < numOfPeople; j++) {
-			app.vars.sortedPeople[j] = {
-				'startCol': app.vars.people[j+1].colCoords,
-				'endCol': app.vars.dtd[j+1].col,
-				'startRow': app.vars.people[j+1].rowCoords,
-				'endRow': app.vars.dtd[j+1].row,
-				'num': app.vars.people[j+1].num,
-				'steps': Math.abs(app.vars.people[j+1].rowCoords - app.vars.dtd[j+1].row) + Math.abs(app.vars.people[j+1].colCoords - app.vars.dtd[j+1].col),
-				'currCol': app.vars.people[j+1].colCoords,
-				'currRow': app.vars.people[j+1].rowCoords
-			}
+		for(k = 0; k < numOfPeople; k++) {
+
+			people[k].startCol	= app.vars.people[k+1].colCoords;
+			people[k].endCol	= app.vars.dtd[k+1].col;
+			people[k].startRow	= app.vars.people[k+1].rowCoords;
+			people[k].endRow		= app.vars.dtd[k+1].row;
+			people[k].num		= app.vars.people[k+1].num;
+			people[k].steps		= Math.abs(app.vars.people[k+1].rowCoords - app.vars.dtd[k+1].row) + Math.abs(app.vars.people[k+1].colCoords - app.vars.dtd[k+1].col);
+			people[k].currCol	= app.vars.people[k+1].colCoords;
+			people[k].currRow	= app.vars.people[k+1].rowCoords;
 		}
 
-		app.vars.sortedPeople.sort(function(a, b) {
+		/*app.vars.sortedPeople.sort(function(a, b) {
 			return (a.steps) - (b.steps);
-		});
+		});*/
 
 		if(typeof cbf == 'function') {
 			cbf.call(this);
 		}
 	},
 
-	/*move: {
-		getExitDoor: function() {
-			var numOfDoors = Object.keys(app.vars.doors).length,
-				numOfPeople = Object.keys(app.vars.people).length,
-				xRes = 0,
-				yRes = 0,
-				total = null,
-				currTotal = null,
-				currDoor = 1;
+	getExitDoor: function() {
+		var numOfDoors = Object.keys(app.vars.doors).length,
+			numOfPeople = Object.keys(app.vars.people).length,
+			xRes = 0,
+			yRes = 0,
+			total = null,
+			currTotal = null,
+			currDoor = 1;
 
-			for(var j = 1; j <= numOfPeople; j++) {
-				for(var i = 1; i <= numOfDoors; i++) {
+		for(var j = 1; j <= numOfPeople; j++) {
+			for(var i = 1; i <= numOfDoors; i++) {
 
-					xRes = Math.abs(app.vars.doors[i].x - app.vars.people[j].rowCoords);
-					yRes = Math.abs(app.vars.doors[i].y - app.vars.people[j].colCoords);
+				xRes = Math.abs(app.vars.doors[i].x - app.vars.people[j].rowCoords);
+				yRes = Math.abs(app.vars.doors[i].y - app.vars.people[j].colCoords);
 
-					currTotal = xRes + yRes;
+				currTotal = xRes + yRes;
 
-					if(total == null || currTotal < total) {
+				if(total == null || currTotal < total) {
 
-						// Compare distance to each door then assign exit door
-						app.vars.dtd[j] = {
-							'row': app.vars.doors[currDoor].x,
-							'col': app.vars.doors[currDoor].y
-						}
-
-						total = currTotal;
-
+					// Compare distance to each door then assign exit door
+					app.vars.dtd[j] = {
+						'row': app.vars.doors[currDoor].x,
+						'col': app.vars.doors[currDoor].y
 					}
 
-					currDoor += 1;
-				} // numOfDoors
-				currDoor = 1;
-				total = null;
-			} // numOfPeople
+					total = currTotal;
 
-		},
-
-		movePerson: function() {
-
-			var x, y, startY, endY, startX, endX, label;
-
-				app.vars.startMove = setInterval(function() {
-
-					app.vars.numOfPeopleToMove = app.vars.sortedPeople.length;
-
-					if(app.vars.numOfPeopleToMove > 0) {
-
-						app.vars.maxSteps = app.vars.sortedPeople[app.vars.numOfPeopleToMove - 1].steps;
-
-						console.log(app.vars.currPerson);
-
-						startY = app.vars.sortedPeople[app.vars.currPerson].currRow,
-						endY = app.vars.sortedPeople[app.vars.currPerson].endRow,
-						startX = app.vars.sortedPeople[app.vars.currPerson].currCol,
-						endX = app.vars.sortedPeople[app.vars.currPerson].endCol,
-						label = app.vars.sortedPeople[app.vars.currPerson].num;
-
-						app.move.getDirection(startY, endY, startX, endX, label, app.vars.currPerson);
-
-						app.vars.currPerson++;
-
-						if(app.vars.currPerson == app.vars.numOfPeopleToMove) {
-							app.vars.currPerson = 0;
-							app.vars.currStep = app.vars.currStep + 1;
-						}
-
-					} else {
-						clearInterval(app.vars.startMove);
-						app.timer.Timer.stop();
-					}
-
-				}, app.vars.timeInter);
-
-		},
-
-		getDirection: function(currRow, endRow, currCol, endCol, person, id, cbf) {
-			var totalHorz = Math.abs(currCol - endCol),
-				totalVert = Math.abs(currRow - endRow);
-
-			if (endRow == 1) {
-				if(currCol == endCol && currRow == endRow) {
-					app.move.moveExit(currRow, endRow, currCol, endCol, person, id);
-				} else if(currCol == endCol) {
-					// console.log(person + ' will move up 1');
-					app.move.moveUp(currRow, endRow, currCol, endCol, person, id);
-				} else if(currCol < endCol) {
-					if(totalVert == 0) {
-						// console.log(person + ' will move right 2');
-						app.move.moveRight(currRow, endRow, currCol, endCol, person, id);
-					} else {
-						// console.log(person + ' will move right 3');
-						app.move.moveRight(currRow, endRow, currCol, endCol, person, id);
-					}
-				} else {
-					if(totalVert == 0) {
-						// console.log(person + ' will move left 4');
-						app.move.moveLeft(currRow, endRow, currCol, endCol, person, id);
-					} else {
-						// console.log(person + ' will move left 5');
-						app.move.moveLeft(currRow, endRow, currCol, endCol, person, id);
-					}
 				}
-			} else if (endRow == app.vars.rows) {
-				if(currCol == endCol && currRow == endRow) {
-					app.move.moveExit(currRow, endRow, currCol, endCol, person, id);
-				} else if (currCol == endCol) {
-					// console.log(person + ' will move down 6');
-					app.move.moveDown(currRow, endRow, currCol, endCol, person, id);
-				} else if(currCol < endCol) {
-					if (totalVert == 0) {
-						// console.log(person + ' will move right 7');
-						app.move.moveRight(currRow, endRow, currCol, endCol, person, id);
-					} else {
-						// console.log(person + ' will move right 8');
-						app.move.moveRight(currRow, endRow, currCol, endCol, person, id);
-					}
-				} else {
-					if (totalVert == 0) {
-						// console.log(person + ' will move left 9');
-						app.move.moveLeft(currRow, endRow, currCol, endCol, person, id);
-					} else {
-						// console.log(person + ' will move left 10');
-						app.move.moveLeft(currRow, endRow, currCol, endCol, person, id);
-					}
-				}
-			} else if (endCol == 1) {
-				if(currCol == endCol && currRow == endRow) {
-					app.move.moveExit(currRow, endRow, currCol, endCol, person, id);
-				} else if(currRow == endRow) {
-					// console.log(person + ' will move left 11');
-					app.move.moveLeft(currRow, endRow, currCol, endCol, person, id);
-				} else if(currRow < endRow) {
-					if (totalHorz == 0) {
-						// console.log(person + ' will move down 12');
-						app.move.moveDown(currRow, endRow, currCol, endCol, person, id);
-					} else {
-						// console.log(person + ' will move down 13');
-						app.move.moveDown(currRow, endRow, currCol, endCol, person, id);
-					}
-				} else {
-					if (totalHorz == 0) {
-						// console.log(person + ' will move up 14');
-						app.move.moveUp(currRow, endRow, currCol, endCol, person, id);
-					} else {
-						// console.log(person + ' will move up 15');
-						app.move.moveUp(currRow, endRow, currCol, endCol, person, id);
-					}
-				}
-			} else if (endCol == app.vars.cols) {
-				if(currCol == endCol && currRow == endRow) {
-					app.move.moveExit(currRow, endRow, currCol, endCol, person, id);
-				} else if(currRow == endRow) {
-					//console.log(person + ' will move right 16');
-					app.move.moveRight(currRow, endRow, currCol, endCol, person, id);
 
-				} else if(currRow < endRow) {
-					if (totalHorz == 0) {
-						// console.log(person + ' will move down 17');
-						app.move.moveDown(currRow, endRow, currCol, endCol, person, id);
-					} else {
-						// console.log(person + ' will move down 18');
-						app.move.moveDown(currRow, endRow, currCol, endCol, person, id);
-					}
-				} else {
-					if (totalHorz == 0) {
-						app.move.moveUp(currRow, endRow, currCol, endCol, person, id);
-					} else {
-						app.move.moveUp(currRow, endRow, currCol, endCol, person, id);
-					}
-				}
-			}
-		},
+				currDoor += 1;
+			} // numOfDoors
+			currDoor = 1;
+			total = null;
+		} // numOfPeople
 
-		moveExit: function(currRow, endRow, currCol, endCol, person, id, cbf) {
-			jQuery('.classroom-wrap li[data-row=' + currRow + '][data-col=' + currCol + ']').removeClass('people').find('span.item').html('');
-
-			app.vars.sortedPeople.splice(id, 1);
-			app.vars.currPerson = -1;
-
-			console.log(app.vars.currPerson);
-
-			if(typeof cbf == 'function') {
-				cbf.call(this);
-			}			
-		},
-
-		moveUp: function(currRow, endRow, currCol, endCol, person, id, cbf) {
-
-			if(!jQuery('.classroom-wrap li[data-row=' + (currRow-1) + '][data-col=' + currCol + ']').hasClass('people')) {
-				jQuery('.classroom-wrap li[data-row=' + currRow + '][data-col=' + currCol + ']').removeClass('people').find('span.item').html('');
-				jQuery('.classroom-wrap li[data-row=' + (currRow-1) + '][data-col=' + currCol + ']').addClass('people').find('span.item').html(person);
-
-				app.move.updatePeopleList((currRow-1), endRow, currCol, endCol, person, id);
-			} else {
-				console.log('pass');
-			}
-
-			if(typeof cbf == 'function') {
-				cbf.call(this);
-			}
-		},
-
-		moveRight: function(currRow, endRow, currCol, endCol, person, id, cbf) {
-
-			if(!jQuery('.classroom-wrap li[data-row=' + currRow + '][data-col=' + (currCol+1) + ']').hasClass('people')) {
-				jQuery('.classroom-wrap li[data-row=' + currRow + '][data-col=' + currCol + ']').removeClass('people').find('span.item').html('');
-				jQuery('.classroom-wrap li[data-row=' + currRow + '][data-col=' + (currCol+1) + ']').addClass('people').find('span.item').html(person);
-
-				app.move.updatePeopleList(currRow, endRow, (currCol+1), endCol, person, id);
-			} else {
-				console.log('pass');
-			}
-
-			if(typeof cbf == 'function') {
-				cbf.call(this);
-			}
-		},
-
-		moveDown: function(currRow, endRow, currCol, endCol, person, id, cbf) {
-
-			if(!jQuery('.classroom-wrap li[data-row=' + (currRow+1) + '][data-col=' + currCol + ']').hasClass('people')) {
-				jQuery('.classroom-wrap li[data-row=' + currRow + '][data-col=' + currCol + ']').removeClass('people').find('span.item').html('');
-				jQuery('.classroom-wrap li[data-row=' + (currRow+1) + '][data-col=' + currCol + ']').addClass('people').find('span.item').html(person);
-
-				app.move.updatePeopleList((currRow+1), endRow, currCol, endCol, person, id);
-			} else {
-				console.log('pass');
-			}
-
-			if(typeof cbf == 'function') {
-				cbf.call(this);
-			}
-		},
-
-		moveLeft: function(currRow, endRow, currCol, endCol, person, id, cbf) {
-
-			if(!jQuery('.classroom-wrap li[data-row=' + currRow + '][data-col=' + (currCol-1) + ']').hasClass('people')) {
-
-				jQuery('.classroom-wrap li[data-row=' + currRow + '][data-col=' + currCol + ']').removeClass('people').find('span.item').html('');
-				jQuery('.classroom-wrap li[data-row=' + currRow + '][data-col=' + (currCol-1) + ']').addClass('people').find('span.item').html(person);
-
-				app.move.updatePeopleList(currRow, endRow, (currCol-1), endCol, person, id);
-			} else {
-				console.log('pass');
-			}
-
-			if(typeof cbf == 'function') {
-				cbf.call(this);
-			}
-		},
-
-		updatePeopleList: function(currRow, endRow, currCol, endCol, person, id) {
-			app.vars.sortedPeople[id].currRow = currRow;
-			app.vars.sortedPeople[id].currCol = currCol;
-		}
-	},
-
-	timer: function() {
-		
-			// Stopwatch element on the page
-			var $stopwatch;
-
-			// Timer speed in milliseconds
-			var incrementTime = 70;
-
-			// Current timer position in milliseconds
-			var currentTime = 0;
-
-			// Start the timer
-			jQuery(function() {
-				$stopwatch = jQuery('#stop-watch');
-				app.timer.Timer = jQuery.timer(updateTimer, incrementTime, true);  
-			});
-
-			// Output time and increment
-			function updateTimer() {
-				var timeString = formatTime(currentTime);
-				$stopwatch.html(timeString);
-				currentTime += incrementTime;
-			}
-
-			// Reset timer
-			this.resetStopwatch = function() {
-				currentTime = 0;
-				app.timer.Timer.stop().once();
-			};
-
-			function pad(number, length) {
-				var str = '' + number;
-				while (str.length < length) {str = '0' + str;}
-				return str;
-			}
-
-			function formatTime(time) {
-				time = time / 10;
-				var min = parseInt(time / 6000),
-					sec = parseInt(time / 100) - (min * 60),
-					hundredths = pad(time - (sec * 100) - (min * 6000), 2);
-				return (min > 0 ? pad(min, 2) : "00") + ":" + pad(sec, 2) + ":" + hundredths;
-			}
-		
-	}*/
+	}
 
 }
 
 
-var person = {
-	
-	props: {
-		startCol: 0,
-		endCol: 0,
-		startRow: 0,
-		endRow: 0,
-		num: 0,
-		steps: 0,
-		currCol: 0,
-		currRow: 0
-	},
+function person(startCol, endCol, startRow, endRow, num, steps,currCol, currRow) {
 
-	move: {
-		getExitDoor: function() {
-			var numOfDoors = Object.keys(app.vars.doors).length,
-				numOfPeople = Object.keys(app.vars.people).length,
-				xRes = 0,
-				yRes = 0,
-				total = null,
-				currTotal = null,
-				currDoor = 1;
+	this.startCol = 0;
+	this.endCol = 0;
+	this.startRow = 0;
+	this.endRow = 0;
+	this.num = 0;
+	this.steps = 0;
+	this.currCol = 0;
+	this.currRow = 0;
+	this.currStep = 0;
+	this.startMove = '';
 
-			for(var j = 1; j <= numOfPeople; j++) {
-				for(var i = 1; i <= numOfDoors; i++) {
+	this.movePerson = function() {
 
-					xRes = Math.abs(app.vars.doors[i].x - app.vars.people[j].rowCoords);
-					yRes = Math.abs(app.vars.doors[i].y - app.vars.people[j].colCoords);
+		var parent = this;
 
-					currTotal = xRes + yRes;
+		if(parent.currStep < parent.steps) {
+			parent.getDirection(parent.currRow, parent.endRow, parent.currCol, parent.endCol, parent.num);
+		}
 
-					if(total == null || currTotal < total) {
+		/*this.startMove = setInterval(function() {
 
-						// Compare distance to each door then assign exit door
-						app.vars.dtd[j] = {
-							'row': app.vars.doors[currDoor].x,
-							'col': app.vars.doors[currDoor].y
-						}
+			var gparent = parent;
 
-						total = currTotal;
+			if(gparent.currStep < gparent.steps) {
+				gparent.getDirection(gparent.currRow, gparent.endRow, gparent.currCol, gparent.endCol, gparent.num);
+			}
 
-					}
+		}, app.vars.timeInter);*/
 
-					currDoor += 1;
-				} // numOfDoors
-				currDoor = 1;
-				total = null;
-			} // numOfPeople
+		// var x, y, startY, endY, startX, endX, label;
 
-		},
+			/*this.startMove = setInterval(function() {
 
-		movePerson: function() {
+				console.log(parent.parent.currStep);
 
-			var x, y, startY, endY, startX, endX, label;
+				if(this.currStep < this.step) {
 
-				app.vars.startMove = setInterval(function() {
+					startY = this.currRow,
+					endY = this.endRow,
+					startX = this.currCol,
+					endX = this.endCol,
+					label = this.num;
 
-					app.vars.numOfPeopleToMove = app.vars.sortedPeople.length;
+					//this.getDirection(startY, endY, startX, endX, label, app.vars.currPerson);
+					console.log('call getDirection');
 
-					if(app.vars.numOfPeopleToMove > 0) {
+				} else {
+					clearInterval(this.startMove);
+					this.timer.Timer.stop();
+				}
 
-						app.vars.maxSteps = app.vars.sortedPeople[app.vars.numOfPeopleToMove - 1].steps;
+			}, app.vars.timeInter);*/
+			
+	};
 
-						console.log(app.vars.currPerson);
-
-						startY = app.vars.sortedPeople[app.vars.currPerson].currRow,
-						endY = app.vars.sortedPeople[app.vars.currPerson].endRow,
-						startX = app.vars.sortedPeople[app.vars.currPerson].currCol,
-						endX = app.vars.sortedPeople[app.vars.currPerson].endCol,
-						label = app.vars.sortedPeople[app.vars.currPerson].num;
-
-						app.move.getDirection(startY, endY, startX, endX, label, app.vars.currPerson);
-
-						app.vars.currPerson++;
-
-						if(app.vars.currPerson == app.vars.numOfPeopleToMove) {
-							app.vars.currPerson = 0;
-							app.vars.currStep = app.vars.currStep + 1;
-						}
-
-					} else {
-						clearInterval(app.vars.startMove);
-						app.timer.Timer.stop();
-					}
-
-				}, app.vars.timeInter);
-				
-		},
-
-		getDirection: function(currRow, endRow, currCol, endCol, person, id, cbf) {
+	this.getDirection = function(currRow, endRow, currCol, endCol, person, id, cbf) {
 			var totalHorz = Math.abs(currCol - endCol),
 				totalVert = Math.abs(currRow - endRow);
 
+			console.log(currRow, endRow, currCol, endCol, person, id);
+
 			if (endRow == 1) {
 				if(currCol == endCol && currRow == endRow) {
-					app.move.moveExit(currRow, endRow, currCol, endCol, person, id);
+					this.moveExit(currRow, endRow, currCol, endCol, person, id);
 				} else if(currCol == endCol) {
 					// console.log(person + ' will move up 1');
-					app.move.moveUp(currRow, endRow, currCol, endCol, person, id);
+					this.moveUp(currRow, endRow, currCol, endCol, person, id);
 				} else if(currCol < endCol) {
 					if(totalVert == 0) {
 						// console.log(person + ' will move right 2');
-						app.move.moveRight(currRow, endRow, currCol, endCol, person, id);
+						this.moveRight(currRow, endRow, currCol, endCol, person, id);
 					} else {
 						// console.log(person + ' will move right 3');
-						app.move.moveRight(currRow, endRow, currCol, endCol, person, id);
+						this.moveRight(currRow, endRow, currCol, endCol, person, id);
 					}
 				} else {
 					if(totalVert == 0) {
 						// console.log(person + ' will move left 4');
-						app.move.moveLeft(currRow, endRow, currCol, endCol, person, id);
+						this.moveLeft(currRow, endRow, currCol, endCol, person, id);
 					} else {
 						// console.log(person + ' will move left 5');
-						app.move.moveLeft(currRow, endRow, currCol, endCol, person, id);
+						this.moveLeft(currRow, endRow, currCol, endCol, person, id);
 					}
 				}
 			} else if (endRow == app.vars.rows) {
 				if(currCol == endCol && currRow == endRow) {
-					app.move.moveExit(currRow, endRow, currCol, endCol, person, id);
+					this.moveExit(currRow, endRow, currCol, endCol, person, id);
 				} else if (currCol == endCol) {
 					// console.log(person + ' will move down 6');
-					app.move.moveDown(currRow, endRow, currCol, endCol, person, id);
+					this.moveDown(currRow, endRow, currCol, endCol, person, id);
 				} else if(currCol < endCol) {
 					if (totalVert == 0) {
 						// console.log(person + ' will move right 7');
-						app.move.moveRight(currRow, endRow, currCol, endCol, person, id);
+						this.moveRight(currRow, endRow, currCol, endCol, person, id);
 					} else {
 						// console.log(person + ' will move right 8');
-						app.move.moveRight(currRow, endRow, currCol, endCol, person, id);
+						this.moveRight(currRow, endRow, currCol, endCol, person, id);
 					}
 				} else {
 					if (totalVert == 0) {
 						// console.log(person + ' will move left 9');
-						app.move.moveLeft(currRow, endRow, currCol, endCol, person, id);
+						this.moveLeft(currRow, endRow, currCol, endCol, person, id);
 					} else {
 						// console.log(person + ' will move left 10');
-						app.move.moveLeft(currRow, endRow, currCol, endCol, person, id);
+						this.moveLeft(currRow, endRow, currCol, endCol, person, id);
 					}
 				}
 			} else if (endCol == 1) {
 				if(currCol == endCol && currRow == endRow) {
-					app.move.moveExit(currRow, endRow, currCol, endCol, person, id);
+					this.moveExit(currRow, endRow, currCol, endCol, person, id);
 				} else if(currRow == endRow) {
 					// console.log(person + ' will move left 11');
-					app.move.moveLeft(currRow, endRow, currCol, endCol, person, id);
+					this.moveLeft(currRow, endRow, currCol, endCol, person, id);
 				} else if(currRow < endRow) {
 					if (totalHorz == 0) {
 						// console.log(person + ' will move down 12');
-						app.move.moveDown(currRow, endRow, currCol, endCol, person, id);
+						this.moveDown(currRow, endRow, currCol, endCol, person, id);
 					} else {
 						// console.log(person + ' will move down 13');
-						app.move.moveDown(currRow, endRow, currCol, endCol, person, id);
+						this.moveDown(currRow, endRow, currCol, endCol, person, id);
 					}
 				} else {
 					if (totalHorz == 0) {
 						// console.log(person + ' will move up 14');
-						app.move.moveUp(currRow, endRow, currCol, endCol, person, id);
+						this.moveUp(currRow, endRow, currCol, endCol, person, id);
 					} else {
 						// console.log(person + ' will move up 15');
-						app.move.moveUp(currRow, endRow, currCol, endCol, person, id);
+						this.moveUp(currRow, endRow, currCol, endCol, person, id);
 					}
 				}
 			} else if (endCol == app.vars.cols) {
 				if(currCol == endCol && currRow == endRow) {
-					app.move.moveExit(currRow, endRow, currCol, endCol, person, id);
+					this.moveExit(currRow, endRow, currCol, endCol, person, id);
 				} else if(currRow == endRow) {
 					//console.log(person + ' will move right 16');
-					app.move.moveRight(currRow, endRow, currCol, endCol, person, id);
+					this.moveRight(currRow, endRow, currCol, endCol, person, id);
 
 				} else if(currRow < endRow) {
 					if (totalHorz == 0) {
 						// console.log(person + ' will move down 17');
-						app.move.moveDown(currRow, endRow, currCol, endCol, person, id);
+						this.moveDown(currRow, endRow, currCol, endCol, person, id);
 					} else {
 						// console.log(person + ' will move down 18');
-						app.move.moveDown(currRow, endRow, currCol, endCol, person, id);
+						this.moveDown(currRow, endRow, currCol, endCol, person, id);
 					}
 				} else {
 					if (totalHorz == 0) {
-						app.move.moveUp(currRow, endRow, currCol, endCol, person, id);
+						this.moveUp(currRow, endRow, currCol, endCol, person, id);
 					} else {
-						app.move.moveUp(currRow, endRow, currCol, endCol, person, id);
+						this.moveUp(currRow, endRow, currCol, endCol, person, id);
 					}
 				}
 			}
-		},
+		};
 
-		moveExit: function(currRow, endRow, currCol, endCol, person, id, cbf) {
+		this.moveExit = function(currRow, endRow, currCol, endCol, person, id, cbf) {
 			jQuery('.classroom-wrap li[data-row=' + currRow + '][data-col=' + currCol + ']').removeClass('people').find('span.item').html('');
 
 			app.vars.sortedPeople.splice(id, 1);
@@ -1059,15 +682,15 @@ var person = {
 			if(typeof cbf == 'function') {
 				cbf.call(this);
 			}			
-		},
+		};
 
-		moveUp: function(currRow, endRow, currCol, endCol, person, id, cbf) {
+		this.moveUp = function(currRow, endRow, currCol, endCol, person, id, cbf) {
 
 			if(!jQuery('.classroom-wrap li[data-row=' + (currRow-1) + '][data-col=' + currCol + ']').hasClass('people')) {
 				jQuery('.classroom-wrap li[data-row=' + currRow + '][data-col=' + currCol + ']').removeClass('people').find('span.item').html('');
 				jQuery('.classroom-wrap li[data-row=' + (currRow-1) + '][data-col=' + currCol + ']').addClass('people').find('span.item').html(person);
 
-				app.move.updatePeopleList((currRow-1), endRow, currCol, endCol, person, id);
+				this.updatePeopleList((currRow-1), endRow, currCol, endCol, person, id);
 			} else {
 				console.log('pass');
 			}
@@ -1075,15 +698,15 @@ var person = {
 			if(typeof cbf == 'function') {
 				cbf.call(this);
 			}
-		},
+		};
 
-		moveRight: function(currRow, endRow, currCol, endCol, person, id, cbf) {
+		this.moveRight = function(currRow, endRow, currCol, endCol, person, id, cbf) {
 
 			if(!jQuery('.classroom-wrap li[data-row=' + currRow + '][data-col=' + (currCol+1) + ']').hasClass('people')) {
 				jQuery('.classroom-wrap li[data-row=' + currRow + '][data-col=' + currCol + ']').removeClass('people').find('span.item').html('');
 				jQuery('.classroom-wrap li[data-row=' + currRow + '][data-col=' + (currCol+1) + ']').addClass('people').find('span.item').html(person);
 
-				app.move.updatePeopleList(currRow, endRow, (currCol+1), endCol, person, id);
+				this.updatePeopleList(currRow, endRow, (currCol+1), endCol, person, id);
 			} else {
 				console.log('pass');
 			}
@@ -1091,15 +714,15 @@ var person = {
 			if(typeof cbf == 'function') {
 				cbf.call(this);
 			}
-		},
+		};
 
-		moveDown: function(currRow, endRow, currCol, endCol, person, id, cbf) {
+		this.moveDown = function(currRow, endRow, currCol, endCol, person, id, cbf) {
 
 			if(!jQuery('.classroom-wrap li[data-row=' + (currRow+1) + '][data-col=' + currCol + ']').hasClass('people')) {
 				jQuery('.classroom-wrap li[data-row=' + currRow + '][data-col=' + currCol + ']').removeClass('people').find('span.item').html('');
 				jQuery('.classroom-wrap li[data-row=' + (currRow+1) + '][data-col=' + currCol + ']').addClass('people').find('span.item').html(person);
 
-				app.move.updatePeopleList((currRow+1), endRow, currCol, endCol, person, id);
+				this.updatePeopleList((currRow+1), endRow, currCol, endCol, person, id);
 			} else {
 				console.log('pass');
 			}
@@ -1107,16 +730,18 @@ var person = {
 			if(typeof cbf == 'function') {
 				cbf.call(this);
 			}
-		},
+		};
 
-		moveLeft: function(currRow, endRow, currCol, endCol, person, id, cbf) {
+		this.moveLeft = function(currRow, endRow, currCol, endCol, person, id, cbf) {
+
+			console.log(currRow, endRow, currCol, endCol, person);
 
 			if(!jQuery('.classroom-wrap li[data-row=' + currRow + '][data-col=' + (currCol-1) + ']').hasClass('people')) {
 
 				jQuery('.classroom-wrap li[data-row=' + currRow + '][data-col=' + currCol + ']').removeClass('people').find('span.item').html('');
 				jQuery('.classroom-wrap li[data-row=' + currRow + '][data-col=' + (currCol-1) + ']').addClass('people').find('span.item').html(person);
 
-				app.move.updatePeopleList(currRow, endRow, (currCol-1), endCol, person, id);
+				this.updatePeopleList(currRow, endRow, (currCol-1), endCol, person, id);
 			} else {
 				console.log('pass');
 			}
@@ -1124,15 +749,25 @@ var person = {
 			if(typeof cbf == 'function') {
 				cbf.call(this);
 			}
-		},
+		};
 
-		updatePeopleList: function(currRow, endRow, currCol, endCol, person, id) {
-			app.vars.sortedPeople[id].currRow = currRow;
-			app.vars.sortedPeople[id].currCol = currCol;
-		}
-	},
+		this.updatePeopleList = function(currRow, endRow, currCol, endCol, person, id) {
+			var gparent = parent;
 
-	timer: function() {
+			console.log(currRow);
+			console.log(currCol);
+
+			gparent.currRow = currRow;
+			gparent.currCol = currCol;
+
+			console.log(gparent.currRow);
+			console.log(gparent.currCol);
+
+			/*app.vars.sortedPeople[id].currRow = currRow;
+			app.vars.sortedPeople[id].currCol = currCol;*/
+		};
+
+	this.timer = function() {
 		
 			// Stopwatch element on the page
 			var $stopwatch;
@@ -1178,3 +813,6 @@ var person = {
 		
 	}
 }
+
+var people = [];
+
