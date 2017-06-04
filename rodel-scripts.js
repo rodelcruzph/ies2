@@ -17,7 +17,7 @@ var app = {
 		numOfPeople: 0,
 		people: {},
 		sortedPeople: [{}],
-		timeInter: 100,
+		timeInter: 1500,
 		dtd: {},
 		currStep: 0,
 		maxSteps: 0,
@@ -513,6 +513,52 @@ var app = {
 			total = null;
 		} // numOfPeople
 
+	},
+
+	timer: function() {
+		
+		// Stopwatch element on the page
+		var $stopwatch;
+
+		// Timer speed in milliseconds
+		var incrementTime = 70;
+
+		// Current timer position in milliseconds
+		var currentTime = 0;
+
+		// Start the timer
+		jQuery(function() {
+			$stopwatch = jQuery('#stop-watch');
+			app.timer.Timer = jQuery.timer(updateTimer, incrementTime, true);  
+		});
+
+		// Output time and increment
+		function updateTimer() {
+			var timeString = formatTime(currentTime);
+			$stopwatch.html(timeString);
+			currentTime += incrementTime;
+		}
+
+		// Reset timer
+		this.resetStopwatch = function() {
+			currentTime = 0;
+			app.timer.Timer.stop().once();
+		};
+
+		function pad(number, length) {
+			var str = '' + number;
+			while (str.length < length) {str = '0' + str;}
+			return str;
+		}
+
+		function formatTime(time) {
+			time = time / 10;
+			var min = parseInt(time / 6000),
+				sec = parseInt(time / 100) - (min * 60),
+				hundredths = pad(time - (sec * 100) - (min * 6000), 2);
+			return (min > 0 ? pad(min, 2) : "00") + ":" + pad(sec, 2) + ":" + hundredths;
+		}
+		
 	}
 
 }
@@ -539,8 +585,11 @@ function person(startCol, endCol, startRow, endRow, num, steps,currCol, currRow)
 			var gparent = parent;
 
 			if(gparent.currStep <= gparent.steps) {
+
 				gparent.getDirection(gparent.currRow, gparent.endRow, gparent.currCol, gparent.endCol, gparent.num);
+
 			}
+
 		}, app.vars.timeInter);
 
 		/*if(parent.currStep <= parent.steps) {
@@ -586,8 +635,6 @@ function person(startCol, endCol, startRow, endRow, num, steps,currCol, currRow)
 	this.getDirection = function(currRow, endRow, currCol, endCol, person, id, cbf) {
 			var totalHorz = Math.abs(currCol - endCol),
 				totalVert = Math.abs(currRow - endRow);
-
-			console.log(currRow, endRow, currCol, endCol, person, id);
 
 			if (endRow == 1) {
 				if(currCol == endCol && currRow == endRow) {
@@ -684,12 +731,19 @@ function person(startCol, endCol, startRow, endRow, num, steps,currCol, currRow)
 		};
 
 		this.moveExit = function(currRow, endRow, currCol, endCol, person, id, cbf) {
+
 			jQuery('.classroom-wrap li[data-row=' + currRow + '][data-col=' + currCol + ']').removeClass('people').find('span.item').html('');
 
-			app.vars.sortedPeople.splice(id, 1);
-			app.vars.currPerson = -1;
+			/*app.vars.sortedPeople.splice(id, 1);
+			app.vars.currPerson = -1;*/
 
-			console.log(app.vars.currPerson);
+			console.log(person);
+
+			/*if(people.length > 0) {
+				people.splice((person - 1), 1);
+			} else {
+				app.timer.Timer.stop();
+			}*/
 
 			if(typeof cbf == 'function') {
 				cbf.call(this);
@@ -772,52 +826,6 @@ function person(startCol, endCol, startRow, endRow, num, steps,currCol, currRow)
 			/*app.vars.sortedPeople[id].currRow = currRow;
 			app.vars.sortedPeople[id].currCol = currCol;*/
 		};
-
-	this.timer = function() {
-		
-			// Stopwatch element on the page
-			var $stopwatch;
-
-			// Timer speed in milliseconds
-			var incrementTime = 70;
-
-			// Current timer position in milliseconds
-			var currentTime = 0;
-
-			// Start the timer
-			jQuery(function() {
-				$stopwatch = jQuery('#stop-watch');
-				app.timer.Timer = jQuery.timer(updateTimer, incrementTime, true);  
-			});
-
-			// Output time and increment
-			function updateTimer() {
-				var timeString = formatTime(currentTime);
-				$stopwatch.html(timeString);
-				currentTime += incrementTime;
-			}
-
-			// Reset timer
-			this.resetStopwatch = function() {
-				currentTime = 0;
-				app.timer.Timer.stop().once();
-			};
-
-			function pad(number, length) {
-				var str = '' + number;
-				while (str.length < length) {str = '0' + str;}
-				return str;
-			}
-
-			function formatTime(time) {
-				time = time / 10;
-				var min = parseInt(time / 6000),
-					sec = parseInt(time / 100) - (min * 60),
-					hundredths = pad(time - (sec * 100) - (min * 6000), 2);
-				return (min > 0 ? pad(min, 2) : "00") + ":" + pad(sec, 2) + ":" + hundredths;
-			}
-		
-	}
 }
 
 var people = [];
