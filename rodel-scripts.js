@@ -11,10 +11,10 @@
 var app = {
 	vars: {
 		boxDim: 25,
-		rows: 6,
-		cols: 6,
+		rows: 0,
+		cols: 0,
 		doors: {},
-		numOfPeople: 10,
+		numOfPeople: 0,
 		people: {},
 		sortedPeople: [{}],
 		timeInter: 100,
@@ -325,7 +325,11 @@ var app = {
 			e.preventDefault();
 			e.stopPropagation();
 
-			app.move.movePerson();
+			var i;
+
+			for(i = 0; i < people.length; i++) {
+				people[i].movePerson();
+			}
 
 			app.timer();
 		});
@@ -531,9 +535,17 @@ function person(startCol, endCol, startRow, endRow, num, steps,currCol, currRow)
 
 		var parent = this;
 
-		if(parent.currStep < parent.steps) {
+		this.startMove = setInterval(function() {
+			var gparent = parent;
+
+			if(gparent.currStep <= gparent.steps) {
+				gparent.getDirection(gparent.currRow, gparent.endRow, gparent.currCol, gparent.endCol, gparent.num);
+			}
+		}, app.vars.timeInter);
+
+		/*if(parent.currStep <= parent.steps) {
 			parent.getDirection(parent.currRow, parent.endRow, parent.currCol, parent.endCol, parent.num);
-		}
+		}*/
 
 		/*this.startMove = setInterval(function() {
 
@@ -752,16 +764,10 @@ function person(startCol, endCol, startRow, endRow, num, steps,currCol, currRow)
 		};
 
 		this.updatePeopleList = function(currRow, endRow, currCol, endCol, person, id) {
-			var gparent = parent;
 
-			console.log(currRow);
-			console.log(currCol);
-
-			gparent.currRow = currRow;
-			gparent.currCol = currCol;
-
-			console.log(gparent.currRow);
-			console.log(gparent.currCol);
+			this.currRow = currRow;
+			this.currCol = currCol;
+			this.currStep += 1;
 
 			/*app.vars.sortedPeople[id].currRow = currRow;
 			app.vars.sortedPeople[id].currCol = currCol;*/
