@@ -24,7 +24,8 @@ var app = {
 		startMove: '',
 		currPerson: 0,
 		numOfPeopleToMove: 0,
-		area: 0
+		area: 0,
+		sameFace: false
 	},
 
 	init: function(c) {
@@ -137,7 +138,7 @@ var app = {
 			switch(param[i-1][1]) {
 				case '1':
 					// Top
-					if (i == 1) {
+					if (!app.vars.sameFace) {
 						app.vars.doors[i].x = 1;
 					} else {
 						app.vars.doors[i].x = 2;
@@ -146,7 +147,7 @@ var app = {
 
 				case '2':
 					// Bottom
-					if (i == 1) {
+					if (!app.vars.sameFace) {
 						app.vars.doors[i].x = app.vars.cols;
 					} else {
 						app.vars.doors[i].x = app.vars.cols - 1;
@@ -155,7 +156,7 @@ var app = {
 
 				case '3':
 					// Left
-					if (i == 1) {
+					if (!app.vars.sameFace) {
 						app.vars.doors[i].y = 1;
 					} else {
 						app.vars.doors[i].y = 2;
@@ -164,7 +165,7 @@ var app = {
 
 				case '4':
 					// Right
-					if (i == 1) {
+					if (!app.vars.sameFace) {
 						app.vars.doors[i].y = app.vars.rows;
 					} else {
 						app.vars.doors[i].y = app.vars.rows - 1;
@@ -173,11 +174,24 @@ var app = {
 
 				case '5':
 					// Center
+
+					if(num > 1) {
+						if(i == 1) {
+							if(param[i-1][0] == param[i][0]) {
+								app.vars.sameFace = true;
+							}
+						}
+					}
+						
 					if(param[i-1][0] == '1' || param[i-1][0] == '2') {
-						if (i == 1) {
+						if (!app.vars.sameFace) {
 							app.vars.doors[i].y = Math.floor(app.vars.rows / 2);
 						} else {
-							app.vars.doors[i].y = Math.floor(app.vars.rows / 2) + 1;
+							if (i == 1) {
+								app.vars.doors[i].y = Math.floor(app.vars.rows / 2);
+							} else {
+								app.vars.doors[i].y = Math.floor(app.vars.rows / 2) + 1;
+							}
 						}
 
 						if(param[i-1][0] == '1') {
@@ -187,10 +201,14 @@ var app = {
 						}
 
 					} else if(param[i-1][0] == '3' || param[i-1][0] == '4') {
-						if (i == 1) {
+						if (!app.vars.sameFace) {
 							app.vars.doors[i].x = Math.floor(app.vars.cols / 2);
 						} else {
-							app.vars.doors[i].x = Math.floor(app.vars.cols / 2) + 1;
+							if (i == 1) {
+								app.vars.doors[i].x = Math.floor(app.vars.cols / 2);
+							} else {
+								app.vars.doors[i].x = Math.floor(app.vars.cols / 2) + 1;
+							}
 						}
 
 						if(param[i-1][0] == '3') {
