@@ -158,6 +158,7 @@ body{
 }
 
 	.form-holder form {
+		width: 60%;
 		font-size: 0;
 		display: inline-block;
 		vertical-align: top;
@@ -177,6 +178,14 @@ body{
 			margin: 0 0 10px;
 			font-size: 0;
 			box-sizing: border-box;
+		}
+
+		.door > label {
+			width: 50%;
+			display: inline-block;
+			vertical-align: middle;
+			margin: 0 0 15px;
+			text-align: left;
 		}
 
 			.f-control {
@@ -237,14 +246,19 @@ body{
 						margin: 3px 0;
 					}
 
-		.lower-box {
-			display: inline-block;
-			vertical-align: top;
-		}
+	.lower-box {
+		width: 40%;
+		display: inline-block;
+		vertical-align: top;
+	}
 
 
 		.door-num {
+			width: 50%;
+			display: inline-block;
+			vertical-align: middle;
 			margin: 0 0 15px;
+			text-align: left;
 		}
 
 		.df-select {

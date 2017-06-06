@@ -51,10 +51,17 @@ var app = {
 
 		if(!jQuery('input[name="door-count"]').is(':checked')) {
 			empty = true;
-		}
+		} else {
 
-		if(!jQuery('input[name="dfr"]').is(':checked')) {
-			empty = true;
+			if(jQuery('input[name="door-count"]:checked').val() == 1) {
+				if(!jQuery('input[name="dfr-1"]').is(':checked')) {
+					empty = true;
+				}
+			} else {
+				if(!jQuery('input[name="dfr-2"]').is(':checked')) {
+					empty = true;
+				}
+			}
 		}
 		
 
@@ -68,7 +75,13 @@ var app = {
 
 			app.vars.area = jQuery('#room-width').val() * jQuery('#room-height').val();
 
-			app.setDoorVar(jQuery('input[name="door-count"]:checked').attr('value'), jQuery('#face-select').val(), jQuery('input[name="dfr"]:checked').attr('value'));
+			if(jQuery('input[name="door-count"]:checked').val() == 1) {
+				app.setDoorVar(jQuery('input[name="door-count"]:checked').attr('value'), [[jQuery('#face-select-1').val(), jQuery('input[name="dfr-1"]:checked').val()]]);
+			} else {
+				app.setDoorVar(jQuery('input[name="door-count"]:checked').attr('value'), [[jQuery('#face-select-1').val(), jQuery('input[name="dfr-1"]:checked').val()], [jQuery('#face-select-2').val(), jQuery('input[name="dfr-2"]:checked').val()]]);
+			}
+
+				
 		}
 
 		if(typeof cbf == 'function') {
@@ -76,10 +89,7 @@ var app = {
 		}
 	},
 
-	setDoorVar: function(num, dir, pos) {
-
-		console.log('num: ' + num + ', dir: ' + dir + ', pos: ' + pos);
-		console.log(app.vars.rows + ' : ' + app.vars.cols);
+	setDoorVar: function(num, param) {
 
 		// instantiate object
 		for(var i = 1; i <= num; i++) {
@@ -90,8 +100,10 @@ var app = {
 		// create doors object
 		for(var i = 1; i <= num; i++) {
 
+			console.log(param[i-1][0] + " : " + param[i-1][1]);
+
 			// door location
-			switch(dir) {
+			switch(param[i-1][0]) {
 				case '1':
 					// Upper
 					console.log('face top \n');
@@ -119,10 +131,10 @@ var app = {
 					app.vars.doors[i].y = app.vars.rows;
 					app.vars.doors[i].face = 'right';
 					break;
-			}
+			} /* switch door location */
 
 			// door position
-			switch(pos) {
+			switch(param[i-1][1]) {
 				case '1':
 					// Top
 					if (i == 1) {
@@ -161,35 +173,35 @@ var app = {
 
 				case '5':
 					// Center
-					if(dir == '1' || dir == '2') {
+					if(param[i-1][0] == '1' || param[i-1][0] == '2') {
 						if (i == 1) {
 							app.vars.doors[i].y = Math.floor(app.vars.rows / 2);
 						} else {
 							app.vars.doors[i].y = Math.floor(app.vars.rows / 2) + 1;
 						}
 
-						if(dir == '1') {
+						if(param[i-1][0] == '1') {
 							app.vars.doors[i].face = 'top';
 						} else {
 							app.vars.doors[i].face = 'bottom';
 						}
 
-					} else if(dir == '3' || dir == '4') {
+					} else if(param[i-1][0] == '3' || param[i-1][0] == '4') {
 						if (i == 1) {
 							app.vars.doors[i].x = Math.floor(app.vars.cols / 2);
 						} else {
 							app.vars.doors[i].x = Math.floor(app.vars.cols / 2) + 1;
 						}
 
-						if(dir == '3') {
+						if(param[i-1][0] == '3') {
 							app.vars.doors[i].face = 'left';
 						} else {
 							app.vars.doors[i].face = 'right';
 						}
 					}
 					break;
-			}
-		}
+			} /* switch door positiion */
+		} /* end for */
 
 	},
 
@@ -239,26 +251,24 @@ var app = {
 									<input type="number" id="num-people"> \
 								</div> \
 							</div> \
-							<div class="f-group"> \
-								<div class="f-control"> \
-									<label for="doof-info">Door</label> \
+							<div class="f-group door"> \
+								<label for="doof-info">Door</label> \
+								<div class="door-num"> \
+									<p> \
+										<label for="dc-one"> \
+											<input type="radio" name="door-count" value="1" id="dc-one"> 1 Door \
+										</label> \
+									</p> \
+									<p> \
+										<label for="dc-two"> \
+											<input type="radio" name="door-count" value="2" id="dc-two"> 2 Doors \
+										</label> \
+									</p> \
 								</div> \
 								<div class="f-control"> \
-									<div class="door-num"> \
-										<p> \
-											<label for="dc-one"> \
-												<input type="radio" name="door-count" value="1" id="dc-one"> 1 Door \
-											</label> \
-										</p> \
-										<p> \
-											<label for="dc-two"> \
-												<input type="radio" name="door-count" value="2" id="dc-two"> 2 Doors \
-											</label> \
-										</p> \
-									</div> \
 									<div class="door-face"> \
 										<div class="df-select"> \
-											<select name="face-select" id="face-select"> \
+											<select name="face-select-1" id="face-select-1"> \
 												<option value="1">Upper</option> \
 												<option value="2">Lower</option> \
 												<option value="3">Left</option> \
@@ -266,20 +276,49 @@ var app = {
 											</select> \
 										</div> \
 										<div class="df-radio"> \
-											<label for="dfrt"> \
-												<input type="radio" name="dfr" value="1" id="dfrt"> Top \
+											<label for="dfrt-1"> \
+												<input type="radio" name="dfr-1" value="1" id="dfrt-1"> Top \
 											</label> \
-											<label for="dfrb"> \
-												<input type="radio" name="dfr" value="2" id="dfrb"> Bottom \
+											<label for="dfrb-1"> \
+												<input type="radio" name="dfr-1" value="2" id="dfrb-1"> Bottom \
 											</label> \
-											<label for="dfrl"> \
-												<input type="radio" name="dfr" value="3" id="dfrl"> Left \
+											<label for="dfrl-1"> \
+												<input type="radio" name="dfr-1" value="3" id="dfrl-1"> Left \
 											</label> \
-											<label for="dfrr"> \
-												<input type="radio" name="dfr" value="4" id="dfrr"> Right \
+											<label for="dfrr-1"> \
+												<input type="radio" name="dfr-1" value="4" id="dfrr-1"> Right \
 											</label> \
-											<label for="dfrc"> \
-												<input type="radio" name="dfr" value="5" id="dfrc"> Center \
+											<label for="dfrc-1"> \
+												<input type="radio" name="dfr-1" value="5" id="dfrc-1"> Center \
+											</label> \
+										</div> \
+									</div> \
+								</div> \
+								<div class="f-control"> \
+									<div class="door-face"> \
+										<div class="df-select"> \
+											<select name="face-select-2" id="face-select-2"> \
+												<option value="1">Upper</option> \
+												<option value="2">Lower</option> \
+												<option value="3">Left</option> \
+												<option value="4">Right</option> \
+											</select> \
+										</div> \
+										<div class="df-radio"> \
+											<label for="dfrt-2"> \
+												<input type="radio" name="dfr-2" value="1" id="dfrt-2"> Top \
+											</label> \
+											<label for="dfrb-2"> \
+												<input type="radio" name="dfr-2" value="2" id="dfrb-2"> Bottom \
+											</label> \
+											<label for="dfrl-2"> \
+												<input type="radio" name="dfr-2" value="3" id="dfrl-2"> Left \
+											</label> \
+											<label for="dfrr-2"> \
+												<input type="radio" name="dfr-2" value="4" id="dfrr-2"> Right \
+											</label> \
+											<label for="dfrc-2"> \
+												<input type="radio" name="dfr-2" value="5" id="dfrc-2"> Center \
 											</label> \
 										</div> \
 									</div> \
