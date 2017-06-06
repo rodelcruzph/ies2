@@ -54,7 +54,7 @@ var app = {
 			empty = true;
 		} else {
 
-			if(jQuery('input[name="door-count"]:checked').val() == 1) {
+			if(jQuery('input[name="door-count"]:checked').val() == 2) {
 				if(!jQuery('input[name="dfr-1"]').is(':checked')) {
 					empty = true;
 				}
@@ -91,6 +91,199 @@ var app = {
 	},
 
 	setDoorVar: function(num, param) {
+
+		var dir, pos;
+
+		// instantiate object
+		for(var i = 1; i <= num; i++) {
+			app.vars.doors[i] = {};
+		}
+
+		// create doors object
+		for(var i = 1; i <= num; i += 2) {
+
+			if(num > 2) {
+				if(i == 1) {
+					if(param[i-1][0] == param[i][0] && param[i-1][1] == param[i][1]) {
+						app.vars.sameFace = true;
+					}
+				}
+			}
+
+			if(i == 1) {
+				dir = param[i-1][0];
+				pos = param[i-1][1]
+			} else {
+				dir = param[1][0];
+				pos = param[1][1];
+			}
+
+			// door location
+			switch(dir) {
+
+				case '1':
+					// Upper
+					console.log('face top \n');
+					app.vars.doors[i].x = 1;
+					app.vars.doors[i+1].x = 1;
+
+					app.vars.doors[i].face = 'top';
+					app.vars.doors[i+1].face = 'top';
+					break;
+
+				case '2':
+					// Lower
+					console.log('face bottom \n');
+					app.vars.doors[i].x = app.vars.cols;
+					app.vars.doors[i+1].x = app.vars.cols;
+
+					app.vars.doors[i].face = 'bottom';
+					app.vars.doors[i+1].face = 'bottom';
+					break;
+
+				case '3':
+					// Left
+					console.log('face left \n');
+					app.vars.doors[i].y = 1;
+					app.vars.doors[i+1].y = 1;
+
+					app.vars.doors[i].face = 'left';
+					app.vars.doors[i+1].face = 'left';
+					break;
+
+				case '4':
+					// Right
+					console.log('face right \n');
+					app.vars.doors[i].y = app.vars.rows;
+					app.vars.doors[i+1].y = app.vars.rows;
+
+					app.vars.doors[i].face = 'right';
+					app.vars.doors[i+1].face = 'right';
+					break;
+			} /* switch door location */
+
+			// door position
+			switch(pos) {
+
+				case '1':
+					// Top
+					if (!app.vars.sameFace) {
+						app.vars.doors[i].x = 1;
+						app.vars.doors[i+1].x = 2;
+					} else {
+						if (i == 1) {
+							app.vars.doors[i].x = 1;
+							app.vars.doors[i+1].x = 2;
+						} else {
+							app.vars.doors[i].x = 3;
+							app.vars.doors[i+1].x = 4;
+						}
+					}
+					break;
+
+				case '2':
+					// Bottom
+					if (!app.vars.sameFace) {
+						app.vars.doors[i].x = app.vars.cols;
+						app.vars.doors[i+1].x = app.vars.cols - 1;
+					} else {
+						if (i == 1) {
+							app.vars.doors[i].x = app.vars.cols;
+							app.vars.doors[i+1].x = app.vars.cols - 1;
+						} else {
+							app.vars.doors[i].x = app.vars.cols - 2;
+							app.vars.doors[i+1].x = app.vars.cols - 3;
+						}
+					}
+					break;
+
+				case '3':
+					// Left
+					if (!app.vars.sameFace) {
+						app.vars.doors[i].y = 1;
+						app.vars.doors[i+1].y = 2;
+					} else {
+						if (i == 1) {
+							app.vars.doors[i].y = 1;
+							app.vars.doors[i+1].y = 2;
+						} else {
+							app.vars.doors[i].y = 3;
+							app.vars.doors[i+1].y = 4;
+						}
+					}
+					break;
+
+				case '4':
+					// Right
+					if (!app.vars.sameFace) {
+						app.vars.doors[i].y = app.vars.rows;
+						app.vars.doors[i+1].y = app.vars.rows - 1;
+					} else {
+						if (i == 1) {
+							app.vars.doors[i].y = app.vars.rows;
+							app.vars.doors[i+1].y = app.vars.rows - 1;
+						} else {
+							app.vars.doors[i].y = app.vars.rows - 2;
+							app.vars.doors[i+1].y = app.vars.rows - 3;
+						}
+					}
+					break;
+
+				case '5':
+					// Center
+					if(dir == '1' || dir == '2') {
+						if (!app.vars.sameFace) {
+							app.vars.doors[i].y = Math.floor(app.vars.rows / 2);
+							app.vars.doors[i+1].y = Math.floor(app.vars.rows / 2) + 1;
+						} else {
+							if (i == 1) {
+								app.vars.doors[i].y = Math.floor(app.vars.rows / 2) - 1;
+								app.vars.doors[i+1].y = Math.floor(app.vars.rows / 2);
+							} else {
+								app.vars.doors[i].y = Math.floor(app.vars.rows / 2) + 1;
+								app.vars.doors[i+1].y = Math.floor(app.vars.rows / 2) + 2;
+							}
+						}
+
+						if(dir == '1') {
+							app.vars.doors[i].face = 'top';
+							app.vars.doors[i+1].face = 'top';
+						} else {
+							app.vars.doors[i].face = 'bottom';
+							app.vars.doors[i+1].face = 'bottom';
+						}
+
+					} else if(dir == '3' || dir == '4') {
+						if (!app.vars.sameFace) {
+							app.vars.doors[i].x = Math.floor(app.vars.cols / 2);
+							app.vars.doors[i+1].x = Math.floor(app.vars.cols / 2) + 1;
+						} else {
+							if (i == 1) {
+								app.vars.doors[i].x = Math.floor(app.vars.cols / 2) - 1;
+								app.vars.doors[i+1].x = Math.floor(app.vars.cols / 2);
+							} else {
+								app.vars.doors[i].x = Math.floor(app.vars.cols / 2) + 1;
+								app.vars.doors[i+1].x = Math.floor(app.vars.cols / 2) + 2;
+							}
+						}
+
+						if(dir == '3') {
+							app.vars.doors[i].face = 'left';
+							app.vars.doors[i+1].face = 'left';
+						} else {
+							app.vars.doors[i].face = 'right';
+							app.vars.doors[i+1].face = 'right';
+						}
+					}
+					break;
+
+			} /*switch door position*/
+
+
+		} /*create doors object*/
+	},
+
+	setDoorVars: function(num, param) {
 
 		// instantiate object
 		for(var i = 1; i <= num; i++) {
@@ -288,12 +481,12 @@ var app = {
 								<div class="door-num"> \
 									<p> \
 										<label for="dc-one"> \
-											<input type="radio" name="door-count" value="1" id="dc-one"> 1 Door \
+											<input type="radio" name="door-count" value="2" id="dc-one"> 1 Door \
 										</label> \
 									</p> \
 									<p> \
 										<label for="dc-two"> \
-											<input type="radio" name="door-count" value="2" id="dc-two"> 2 Doors \
+											<input type="radio" name="door-count" value="4" id="dc-two"> 2 Doors \
 										</label> \
 									</p> \
 								</div> \
