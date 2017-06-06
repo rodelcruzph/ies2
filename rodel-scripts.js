@@ -102,6 +102,13 @@ var app = {
 		for(var i = 1; i <= num; i++) {
 
 			console.log(param[i-1][0] + " : " + param[i-1][1]);
+			if(num > 1) {
+				if(i == 1) {
+					if(param[i-1][0] == param[i][0] && param[i-1][1] == param[i][1]) {
+						app.vars.sameFace = true;
+					}
+				}
+			}
 
 			// door location
 			switch(param[i-1][0]) {
@@ -141,7 +148,11 @@ var app = {
 					if (!app.vars.sameFace) {
 						app.vars.doors[i].x = 1;
 					} else {
-						app.vars.doors[i].x = 2;
+						if (i == 1) {
+							app.vars.doors[i].x = 1;
+						} else {
+							app.vars.doors[i].x = 2;
+						}
 					}
 					break;
 
@@ -150,7 +161,11 @@ var app = {
 					if (!app.vars.sameFace) {
 						app.vars.doors[i].x = app.vars.cols;
 					} else {
-						app.vars.doors[i].x = app.vars.cols - 1;
+						if (i == 1) {
+							app.vars.doors[i].x = app.vars.cols;
+						} else {
+							app.vars.doors[i].x = app.vars.cols - 1;
+						}
 					}
 					break;
 
@@ -159,7 +174,11 @@ var app = {
 					if (!app.vars.sameFace) {
 						app.vars.doors[i].y = 1;
 					} else {
-						app.vars.doors[i].y = 2;
+						if (i == 1) {
+							app.vars.doors[i].y = 1;
+						} else {
+							app.vars.doors[i].y = 2;
+						}
 					}
 					break;
 
@@ -168,21 +187,16 @@ var app = {
 					if (!app.vars.sameFace) {
 						app.vars.doors[i].y = app.vars.rows;
 					} else {
-						app.vars.doors[i].y = app.vars.rows - 1;
+						if (i == 1) {
+							app.vars.doors[i].y = app.vars.rows;
+						} else {
+							app.vars.doors[i].y = app.vars.rows - 1;
+						}
 					}
 					break;
 
 				case '5':
 					// Center
-
-					if(num > 1) {
-						if(i == 1) {
-							if(param[i-1][0] == param[i][0]) {
-								app.vars.sameFace = true;
-							}
-						}
-					}
-						
 					if(param[i-1][0] == '1' || param[i-1][0] == '2') {
 						if (!app.vars.sameFace) {
 							app.vars.doors[i].y = Math.floor(app.vars.rows / 2);
