@@ -70,8 +70,8 @@ var app = {
 			alert('Please fill out form completely');
 			return;
 		} else {
-			app.vars.rows = jQuery('#room-width').val() * 2;
-			app.vars.cols = jQuery('#room-height').val() * 2;
+			app.vars.cols = jQuery('#room-width').val() * 2;
+			app.vars.rows = jQuery('#room-height').val() * 2;
 			app.vars.numOfPeople = jQuery('#num-people').val();
 
 			app.vars.area = jQuery('#room-width').val() * jQuery('#room-height').val();
@@ -134,8 +134,8 @@ var app = {
 				case '2':
 					// Lower
 					console.log('face bottom \n');
-					app.vars.doors[i].x = app.vars.cols;
-					app.vars.doors[i+1].x = app.vars.cols;
+					app.vars.doors[i].x = app.vars.rows;
+					app.vars.doors[i+1].x = app.vars.rows;
 
 					app.vars.doors[i].face = 'bottom';
 					app.vars.doors[i+1].face = 'bottom';
@@ -154,8 +154,8 @@ var app = {
 				case '4':
 					// Right
 					console.log('face right \n');
-					app.vars.doors[i].y = app.vars.rows;
-					app.vars.doors[i+1].y = app.vars.rows;
+					app.vars.doors[i].y = app.vars.cols;
+					app.vars.doors[i+1].y = app.vars.cols;
 
 					app.vars.doors[i].face = 'right';
 					app.vars.doors[i+1].face = 'right';
@@ -184,15 +184,15 @@ var app = {
 				case '2':
 					// Bottom
 					if (!app.vars.sameFace) {
-						app.vars.doors[i].x = app.vars.cols;
-						app.vars.doors[i+1].x = app.vars.cols - 1;
+						app.vars.doors[i].x = app.vars.rows;
+						app.vars.doors[i+1].x = app.vars.rows - 1;
 					} else {
 						if (i == 1) {
-							app.vars.doors[i].x = app.vars.cols;
-							app.vars.doors[i+1].x = app.vars.cols - 1;
+							app.vars.doors[i].x = app.vars.rows;
+							app.vars.doors[i+1].x = app.vars.rows - 1;
 						} else {
-							app.vars.doors[i].x = app.vars.cols - 2;
-							app.vars.doors[i+1].x = app.vars.cols - 3;
+							app.vars.doors[i].x = app.vars.rows - 2;
+							app.vars.doors[i+1].x = app.vars.rows - 3;
 						}
 					}
 					break;
@@ -216,15 +216,15 @@ var app = {
 				case '4':
 					// Right
 					if (!app.vars.sameFace) {
-						app.vars.doors[i].y = app.vars.rows;
-						app.vars.doors[i+1].y = app.vars.rows - 1;
+						app.vars.doors[i].y = app.vars.cols;
+						app.vars.doors[i+1].y = app.vars.cols - 1;
 					} else {
 						if (i == 1) {
-							app.vars.doors[i].y = app.vars.rows;
-							app.vars.doors[i+1].y = app.vars.rows - 1;
+							app.vars.doors[i].y = app.vars.cols;
+							app.vars.doors[i+1].y = app.vars.cols - 1;
 						} else {
-							app.vars.doors[i].y = app.vars.rows - 2;
-							app.vars.doors[i+1].y = app.vars.rows - 3;
+							app.vars.doors[i].y = app.vars.cols - 2;
+							app.vars.doors[i+1].y = app.vars.cols - 3;
 						}
 					}
 					break;
@@ -233,15 +233,15 @@ var app = {
 					// Center
 					if(dir == '1' || dir == '2') {
 						if (!app.vars.sameFace) {
-							app.vars.doors[i].y = Math.floor(app.vars.rows / 2);
-							app.vars.doors[i+1].y = Math.floor(app.vars.rows / 2) + 1;
+							app.vars.doors[i].y = Math.floor(app.vars.cols / 2);
+							app.vars.doors[i+1].y = Math.floor(app.vars.cols / 2) + 1;
 						} else {
 							if (i == 1) {
-								app.vars.doors[i].y = Math.floor(app.vars.rows / 2) - 1;
-								app.vars.doors[i+1].y = Math.floor(app.vars.rows / 2);
+								app.vars.doors[i].y = Math.floor(app.vars.cols / 2) - 1;
+								app.vars.doors[i+1].y = Math.floor(app.vars.cols / 2);
 							} else {
-								app.vars.doors[i].y = Math.floor(app.vars.rows / 2) + 1;
-								app.vars.doors[i+1].y = Math.floor(app.vars.rows / 2) + 2;
+								app.vars.doors[i].y = Math.floor(app.vars.cols / 2) + 1;
+								app.vars.doors[i+1].y = Math.floor(app.vars.cols / 2) + 2;
 							}
 						}
 
@@ -255,15 +255,15 @@ var app = {
 
 					} else if(dir == '3' || dir == '4') {
 						if (!app.vars.sameFace) {
-							app.vars.doors[i].x = Math.floor(app.vars.cols / 2);
-							app.vars.doors[i+1].x = Math.floor(app.vars.cols / 2) + 1;
+							app.vars.doors[i].x = Math.floor(app.vars.rows / 2);
+							app.vars.doors[i+1].x = Math.floor(app.vars.rows / 2) + 1;
 						} else {
 							if (i == 1) {
-								app.vars.doors[i].x = Math.floor(app.vars.cols / 2) - 1;
-								app.vars.doors[i+1].x = Math.floor(app.vars.cols / 2);
+								app.vars.doors[i].x = Math.floor(app.vars.rows / 2) - 1;
+								app.vars.doors[i+1].x = Math.floor(app.vars.rows / 2);
 							} else {
-								app.vars.doors[i].x = Math.floor(app.vars.cols / 2) + 1;
-								app.vars.doors[i+1].x = Math.floor(app.vars.cols / 2) + 2;
+								app.vars.doors[i].x = Math.floor(app.vars.rows / 2) + 1;
+								app.vars.doors[i+1].x = Math.floor(app.vars.rows / 2) + 2;
 							}
 						}
 
