@@ -25,7 +25,8 @@ var app = {
 		currPerson: 0,
 		numOfPeopleToMove: 0,
 		area: 0,
-		sameFace: false
+		sameFace: false,
+		ptd: [{}]
 	},
 
 	init: function(c) {
@@ -581,6 +582,8 @@ var app = {
 
 				app.init(app.sortPeople(app.getExitDoor()));
 
+				app.getNewExitDoor();
+
 				/*app.timer();*/
 			});
 		});
@@ -719,30 +722,41 @@ var app = {
 	sortPeople: function(cbf) {
 		var exitDoors = Object.keys(app.vars.dtd).length,
 			numOfPeople = Object.keys(app.vars.people).length,
-			k = 0;
+			j = 0;
 
-		for(k = 0; k < numOfPeople; k++) {
+		for(j = 0; j < numOfPeople; j++) {
 
-			people[k].startCol	= app.vars.people[k+1].colCoords;
+			app.vars.sortedPeople[j] = {
+				'startCol': app.vars.people[j+1].colCoords,
+				'endCol': app.vars.dtd[j+1].col,
+				'startRow': app.vars.people[j+1].rowCoords,
+				'endRow': app.vars.dtd[j+1].row,
+				'num': app.vars.people[j+1].num,
+				'steps': Math.abs(app.vars.people[j+1].rowCoords - app.vars.dtd[j+1].row) + Math.abs(app.vars.people[j+1].colCoords - app.vars.dtd[j+1].col),
+				'currCol': app.vars.people[j+1].colCoords,
+				'currRow': app.vars.people[j+1].rowCoords
+			}
+
+			/*people[k].startCol	= app.vars.people[k+1].colCoords;
 			people[k].endCol	= app.vars.dtd[k+1].col;
 			people[k].startRow	= app.vars.people[k+1].rowCoords;
 			people[k].endRow		= app.vars.dtd[k+1].row;
 			people[k].num		= app.vars.people[k+1].num;
 			people[k].steps		= Math.abs(app.vars.people[k+1].rowCoords - app.vars.dtd[k+1].row) + Math.abs(app.vars.people[k+1].colCoords - app.vars.dtd[k+1].col);
 			people[k].currCol	= app.vars.people[k+1].colCoords;
-			people[k].currRow	= app.vars.people[k+1].rowCoords;
+			people[k].currRow	= app.vars.people[k+1].rowCoords;*/
 		}
 
-		/*app.vars.sortedPeople.sort(function(a, b) {
+		app.vars.sortedPeople.sort(function(a, b) {
 			return (a.steps) - (b.steps);
-		});*/
+		});
 
 		if(typeof cbf == 'function') {
 			cbf.call(this);
 		}
 	},
 
-	getExitDoor: function() {
+	getExitDoor: function(c) {
 		var numOfDoors = Object.keys(app.vars.doors).length,
 			numOfPeople = Object.keys(app.vars.people).length,
 			xRes = 0,
@@ -776,6 +790,23 @@ var app = {
 			currDoor = 1;
 			total = null;
 		} // numOfPeople
+
+		if(typeof c == 'function') {
+			c.call(this);
+		}
+	},
+
+	getNewExitDoor: function() {
+
+		var numOfDoors = Object.keys(app.vars.doors).length;
+
+		for(var i = 0; i < numOfDoors; i++) {
+			app.vars.ptd[i] = app.vars.sortedPeople.filter(function(el) {
+						return el.endRow == app.vars.doors[i+1].x && el.endCol == app.vars.doors[i+1].y;
+					});
+		}
+
+		console.log(app.vars.ptd);
 
 	},
 
@@ -1014,7 +1045,19 @@ function person(startCol, endCol, startRow, endRow, num, steps,currCol, currRow)
 			}			
 		};
 
+		this.checkUp = function(currRow, endRow, currCol, endCol, person, id, cbf) {
+			if(!jQuery('.classroom-wrap li[data-row=' + (currRow-1) + '][data-col=' + currCol + ']').hasClass('people')) {
+				return true;
+			} else {
+				return false;
+			}
+		},
+
 		this.moveUp = function(currRow, endRow, currCol, endCol, person, id, cbf) {
+			this.updatePeopleList((currRow-1), endRow, currCol, endCol, person, id);
+		},
+
+		this.moveUps = function(currRow, endRow, currCol, endCol, person, id, cbf) {
 
 			if(!jQuery('.classroom-wrap li[data-row=' + (currRow-1) + '][data-col=' + currCol + ']').hasClass('people')) {
 				jQuery('.classroom-wrap li[data-row=' + currRow + '][data-col=' + currCol + ']').removeClass('people').find('span.item').html('');
