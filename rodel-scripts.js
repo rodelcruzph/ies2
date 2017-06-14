@@ -582,7 +582,9 @@ var app = {
 
 				app.init(app.sortPeople(app.getExitDoor()));
 
-				app.getNewExitDoor();
+				app.getNewExitDoor(function() {
+					app.makePeople();
+				});
 
 				/*app.timer();*/
 			});
@@ -796,9 +798,13 @@ var app = {
 		}
 	},
 
-	getNewExitDoor: function() {
+	getNewExitDoor: function(c) {
 
-		var numOfDoors = Object.keys(app.vars.doors).length;
+		var numOfDoors = Object.keys(app.vars.doors).length,
+			totalPeople = 0,
+			getNumPeople = [], // total number of people per door
+			getFrom = [],
+			addTo = [];
 
 		for(var i = 0; i < numOfDoors; i++) {
 			app.vars.ptd[i] = jQuery.grep(app.vars.sortedPeople, function(el) {
@@ -806,7 +812,49 @@ var app = {
 					});
 		}
 
-		console.log(app.vars.ptd);
+		// console.log(app.vars.ptd);
+
+		for(var i = 0; i < app.vars.ptd.length - 2; i++) {
+
+			var k = i * 2;
+
+			// check which door tile has more people
+			if (app.vars.ptd[k].length > app.vars.ptd[k+1].length) {
+				getFrom[i] = k;
+			} else {
+				getFrom[i] = k+1;
+			}
+		}
+
+		console.log(getFrom);
+
+		for(var i = 0; i < app.vars.ptd.length - 2; i++) {
+
+			var k = i * 2,
+				j = getFrom[i];
+
+			totalPeople = Math.ceil((app.vars.ptd[k].length + app.vars.ptd[k+1].length) / 2 );
+
+			getNumPeople[i] = app.vars.ptd[j].length - totalPeople;
+		}
+
+		console.log(getNumPeople);
+
+		for(var i = 0; i < getNumPeople.length; i++) {
+
+			for(var j = (app.vars.ptd[getFrom[i]].length - 1); j > (app.vars.ptd[getFrom[i]].length - 1) - getNumPeople[i]; j--) {
+
+				var index = app.vars.sortedPeople.map(function(o) { return o.num; }).indexOf(app.vars.ptd[getFrom[i]][j].num);
+
+				app.vars.sortedPeople[index].endRow = app.vars.doors[i + 1].x;
+				app.vars.sortedPeople[index].endCol = app.vars.doors[i + 1].y;
+
+			}
+
+		}
+
+		/*var index = peoples.map(function(o) { return o.attr1; }).indexOf("john");
+		console.log("index of 'john': " + index);*/
 
 		/*
 		app.vars.ptd[0].length > app.vars.ptd[1].length;
@@ -817,6 +865,10 @@ var app = {
 
 		Math.floor((app.vars.ptd[2].length + app.vars.ptd[3].length) / 2);
 
+		2, 11, 1, 7
+
+
+
 		1. add total of both ptd
 		2. divide total by 2, round up
 		3. total = get the remainder
@@ -824,6 +876,43 @@ var app = {
 		5. change endRow and endCol of the retrieved objects equal to endRow and endCol of lower ptd
 		*/
 
+		if(typeof c == 'function') {
+			c.call(this);
+		}
+
+	},
+
+	makePeople: function(cbf) {
+		var exitDoors = Object.keys(app.vars.dtd).length,
+			numOfPeople = Object.keys(app.vars.people).length,
+			k = 0;
+
+		for(k = 0; k < numOfPeople; k++) {
+
+			/*app.vars.sortedPeople[j] = {
+				'startCol': app.vars.people[j+1].colCoords,
+				'endCol': app.vars.dtd[j+1].col,
+				'startRow': app.vars.people[j+1].rowCoords,
+				'endRow': app.vars.dtd[j+1].row,
+				'num': app.vars.people[j+1].num,
+				'steps': Math.abs(app.vars.people[j+1].rowCoords - app.vars.dtd[j+1].row) + Math.abs(app.vars.people[j+1].colCoords - app.vars.dtd[j+1].col),
+				'currCol': app.vars.people[j+1].colCoords,
+				'currRow': app.vars.people[j+1].rowCoords
+			}*/
+
+			people[k].startCol	= app.vars.sortedPeople[k].startCol;
+			people[k].endCol	= app.vars.sortedPeople[k].endCol;
+			people[k].startRow	= app.vars.sortedPeople[k].startRow;
+			people[k].endRow	= app.vars.sortedPeople[k].endRow;
+			people[k].num		= app.vars.sortedPeople[k].num;
+			people[k].steps		= Math.abs(app.vars.sortedPeople[k].startCol - app.vars.sortedPeople[k].endCol) + Math.abs(app.vars.sortedPeople[k].startRow - app.vars.sortedPeople[k].endRow);
+			people[k].currCol	= app.vars.sortedPeople[k].currCol;
+			people[k].currRow	= app.vars.sortedPeople[k].currRow;
+		}
+
+		if(typeof cbf == 'function') {
+			cbf.call(this);
+		}
 	},
 
 	timer: function() {
