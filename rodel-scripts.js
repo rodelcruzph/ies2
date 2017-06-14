@@ -801,12 +801,28 @@ var app = {
 		var numOfDoors = Object.keys(app.vars.doors).length;
 
 		for(var i = 0; i < numOfDoors; i++) {
-			app.vars.ptd[i] = app.vars.sortedPeople.filter(function(el) {
+			app.vars.ptd[i] = jQuery.grep(app.vars.sortedPeople, function(el) {
 						return el.endRow == app.vars.doors[i+1].x && el.endCol == app.vars.doors[i+1].y;
 					});
 		}
 
 		console.log(app.vars.ptd);
+
+		/*
+		app.vars.ptd[0].length > app.vars.ptd[1].length;
+
+		app.vars.ptd[2].length < app.vars.ptd[3].length;
+
+		Math.floor((app.vars.ptd[0].length + app.vars.ptd[1].length) / 2);
+
+		Math.floor((app.vars.ptd[2].length + app.vars.ptd[3].length) / 2);
+
+		1. add total of both ptd
+		2. divide total by 2, round up
+		3. total = get the remainder
+		4. get total number of objects starting from end of the larger ptd
+		5. change endRow and endCol of the retrieved objects equal to endRow and endCol of lower ptd
+		*/
 
 	},
 
