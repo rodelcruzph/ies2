@@ -1158,11 +1158,11 @@ function person(startCol, endCol, startRow, endRow, num, steps,currCol, currRow)
 			}
 		},
 
-		this.moveUp = function(currRow, endRow, currCol, endCol, person, id, cbf) {
+		this.moveUps = function(currRow, endRow, currCol, endCol, person, id, cbf) {
 			this.updatePeopleList((currRow-1), endRow, currCol, endCol, person, id);
 		},
 
-		this.moveUps = function(currRow, endRow, currCol, endCol, person, id, cbf) {
+		this.moveUp = function(currRow, endRow, currCol, endCol, person, id, cbf) {
 
 			if(!jQuery('.classroom-wrap li[data-row=' + (currRow-1) + '][data-col=' + currCol + ']').hasClass('people')) {
 				jQuery('.classroom-wrap li[data-row=' + currRow + '][data-col=' + currCol + ']').removeClass('people').find('span.item').html('');
