@@ -812,35 +812,74 @@ var app = {
 					});
 		}
 
-		// console.log(app.vars.ptd);
+		console.log(app.vars.ptd.length);
 
-		for(var i = 0; i < app.vars.ptd.length - 2; i++) {
+		if (app.vars.ptd.length < 3) {
+			for(var i = 0; i <= app.vars.ptd.length - 2; i++) {
 
-			var k = i * 2;
+				var k = i * 2;
 
-			// check which door tile has more people
-			if (app.vars.ptd[k].length > app.vars.ptd[k+1].length) {
-				getFrom[i] = k;
-			} else {
-				getFrom[i] = k+1;
+				// check which door tile has more people
+				if (app.vars.ptd[k].length > app.vars.ptd[k+1].length) {
+					getFrom[i] = k;
+				} else {
+					getFrom[i] = k+1;
+				}
+			}
+		} else {
+			for(var i = 0; i < app.vars.ptd.length - 2; i++) {
+
+				var k = i * 2;
+
+				// check which door tile has more people
+				if (app.vars.ptd[k].length > app.vars.ptd[k+1].length) {
+					getFrom[i] = k;
+				} else {
+					getFrom[i] = k+1;
+				}
 			}
 		}
 
+			
+
 		console.log(getFrom);
 
-		for(var i = 0; i < app.vars.ptd.length - 2; i++) {
+		if (app.vars.ptd.length < 3) {
+			for(var i = 0; i <= app.vars.ptd.length - 2; i++) {
 
-			var k = i * 2,
-				j = getFrom[i];
+				var k = i * 2,
+					j = getFrom[i];
 
-			totalPeople = Math.ceil((app.vars.ptd[k].length + app.vars.ptd[k+1].length) / 2 );
+				totalPeople = Math.ceil((app.vars.ptd[k].length + app.vars.ptd[k+1].length) / 2 );
 
-			getNumPeople[i] = app.vars.ptd[j].length - totalPeople;
+				getNumPeople[i] = app.vars.ptd[j].length - totalPeople;
+			}
+		} else {
+			for(var i = 0; i < app.vars.ptd.length - 2; i++) {
+
+				var k = i * 2,
+					j = getFrom[i];
+
+				totalPeople = Math.ceil((app.vars.ptd[k].length + app.vars.ptd[k+1].length) / 2 );
+
+				getNumPeople[i] = app.vars.ptd[j].length - totalPeople;
+			}
 		}
+
+			
 
 		console.log(getNumPeople);
 
 		for(var i = 0; i < getNumPeople.length; i++) {
+
+			/*for(var j = getNumPeople.length - 1; j > 0; j--) {
+
+				var index = app.vars.sortedPeople.map(function(o) { return o.num; }).indexOf(app.vars.ptd[getFrom[i]][j].num);
+
+				app.vars.sortedPeople[index].endRow = app.vars.doors[i+1].x;
+				app.vars.sortedPeople[index].endCol = app.vars.doors[i+1].y;
+
+			}*/
 
 			for(var j = (app.vars.ptd[getFrom[i]].length - 1); j > (app.vars.ptd[getFrom[i]].length - 1) - getNumPeople[i]; j--) {
 
@@ -1039,7 +1078,7 @@ function person(startCol, endCol, startRow, endRow, num, steps,currCol, currRow)
 			if (endRow == 1) {
 				if(currCol == endCol && currRow == endRow) {
 					this.moveExit(currRow, endRow, currCol, endCol, person, id);
-				} else if(currCol == endCol) {
+				} else if(currRow > endRow) {
 					// console.log(person + ' will move up 1');
 					this.moveUp(currRow, endRow, currCol, endCol, person, id);
 				} else if(currCol < endCol) {
@@ -1062,7 +1101,7 @@ function person(startCol, endCol, startRow, endRow, num, steps,currCol, currRow)
 			} else if (endRow == app.vars.rows) {
 				if(currCol == endCol && currRow == endRow) {
 					this.moveExit(currRow, endRow, currCol, endCol, person, id);
-				} else if (currCol == endCol) {
+				} else if (currRow < endRow) {
 					// console.log(person + ' will move down 6');
 					this.moveDown(currRow, endRow, currCol, endCol, person, id);
 				} else if(currCol < endCol) {
@@ -1085,7 +1124,7 @@ function person(startCol, endCol, startRow, endRow, num, steps,currCol, currRow)
 			} else if (endCol == 1) {
 				if(currCol == endCol && currRow == endRow) {
 					this.moveExit(currRow, endRow, currCol, endCol, person, id);
-				} else if(currRow == endRow) {
+				} else if(currCol > endCol) {
 					// console.log(person + ' will move left 11');
 					this.moveLeft(currRow, endRow, currCol, endCol, person, id);
 				} else if(currRow < endRow) {
@@ -1108,7 +1147,7 @@ function person(startCol, endCol, startRow, endRow, num, steps,currCol, currRow)
 			} else if (endCol == app.vars.cols) {
 				if(currCol == endCol && currRow == endRow) {
 					this.moveExit(currRow, endRow, currCol, endCol, person, id);
-				} else if(currRow == endRow) {
+				} else if(currCol < endCol) {
 					//console.log(person + ' will move right 16');
 					this.moveRight(currRow, endRow, currCol, endCol, person, id);
 
