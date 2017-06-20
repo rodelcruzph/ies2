@@ -582,9 +582,11 @@ var app = {
 
 				app.init(app.sortPeople(app.getExitDoor()));
 
-				app.getNewExitDoor(function() {
+				app.makePeople();
+
+				/*app.getNewExitDoor(function() {
 					app.makePeople();
-				});
+				});*/
 
 				/*app.timer();*/
 			});
@@ -601,6 +603,16 @@ var app = {
 			}
 
 			app.timer();
+
+			var globalInterval = setInterval(function() {
+				if(!app.checkRoom()) {
+					console.log('stop time');
+					app.timer.Timer.stop();
+					clearInterval(globalInterval);
+
+					app.modifyTimer();
+				}
+			}, app.vars.timeInter);
 		});
 
 		if(typeof cbf == 'function') {
@@ -998,6 +1010,29 @@ var app = {
 			return (min > 0 ? pad(min, 2) : "00") + ":" + pad(sec, 2) + ":" + hundredths;
 		}
 		
+	},
+
+	checkRoom: function() {
+		if(jQuery('.classroom-wrap li').hasClass('people')) {
+			return true;
+		} else {
+			return false;
+		}
+	},
+
+	modifyTimer: function() {
+		var currTime = jQuery('#stop-watch').html(),
+			currMin = currTime.substr(0, 2),
+			currMm = currTime.substr(6, 2),
+			timeSep, newTime;
+
+			timeSep = currTime.indexOf(":");
+
+			newTime = currTime.substr(timeSep+1, 2);
+
+			console.log(currMin + ":" + (45 + parseInt(newTime)) + ":" + currMm);
+
+			jQuery('.timer').append('<p>+ 45 seconds</p><hr /><p>' + currMin + ':' + (45 + parseInt(newTime)) + ':' + currMm + '</p>');
 	}
 
 }
@@ -1023,10 +1058,14 @@ function person(startCol, endCol, startRow, endRow, num, steps,currCol, currRow)
 		this.startMove = setInterval(function() {
 			var gparent = parent;
 
-			if(gparent.currStep <= gparent.steps) {
+			/*if(gparent.currStep <= gparent.steps) {*/
+
+			if(app.checkRoom()) {
 
 				gparent.getDirection(gparent.currRow, gparent.endRow, gparent.currCol, gparent.endCol, gparent.num);
 
+			} else {
+				clearInterval(this.startMove);
 			}
 
 		}, app.vars.timeInter);
@@ -1071,99 +1110,334 @@ function person(startCol, endCol, startRow, endRow, num, steps,currCol, currRow)
 			
 	};
 
+	this.allowedDirection = function(currRow, endRow, currCol, endCol, person, id, movePrimary, moveSecondary, dir) {
+		/* Select movement direction */
+
+		if(dir == 1) {
+			if(this.checkUp(currRow, endRow, currCol, endCol, person, id)) {
+				this.moveUp(currRow, endRow, currCol, endCol, person, id);
+			} else {
+				if(moveSecondary == 2) {
+					if(this.checkRight(currRow, endRow, currCol, endCol, person, id)) {
+						this.moveRight(currRow, endRow, currCol, endCol, person, id);
+					} else {
+						console.log('pass');
+					}
+				} else if(moveSecondary == 4) {
+					if(this.checkLeft(currRow, endRow, currCol, endCol, person, id)) {
+						this.moveLeft(currRow, endRow, currCol, endCol, person, id);
+					} else {
+						console.log('pass');
+					}
+				}
+			}
+		} else if(dir == 2) {
+			if(this.checkRight(currRow, endRow, currCol, endCol, person, id)) {
+				this.moveRight(currRow, endRow, currCol, endCol, person, id);
+			} else {
+				if(moveSecondary == 1) {
+					if(this.checkUp(currRow, endRow, currCol, endCol, person, id)) {
+						this.moveUp(currRow, endRow, currCol, endCol, person, id);
+					} else {
+						console.log('pass');
+					}
+				} else if(moveSecondary == 3) {
+					if(this.checkDown(currRow, endRow, currCol, endCol, person, id)) {
+						this.moveDown(currRow, endRow, currCol, endCol, person, id);
+					} else {
+						console.log('pass');
+					}
+				}
+			}
+		} else if(dir == 3) {
+			if(this.checkDown(currRow, endRow, currCol, endCol, person, id)) {
+				this.moveDown(currRow, endRow, currCol, endCol, person, id);
+			} else {
+				if(moveSecondary == 2) {
+					if(this.checkRight(currRow, endRow, currCol, endCol, person, id)) {
+						this.moveRight(currRow, endRow, currCol, endCol, person, id);
+					} else {
+						console.log('pass');
+					}
+				} else if(moveSecondary == 4) {
+					if(this.checkLeft(currRow, endRow, currCol, endCol, person, id)) {
+						this.moveLeft(currRow, endRow, currCol, endCol, person, id);
+					} else {
+						console.log('pass');
+					}
+				}
+			}
+		} else if(dir == 4) {
+			if(this.checkLeft(currRow, endRow, currCol, endCol, person, id)) {
+				this.moveLeft(currRow, endRow, currCol, endCol, person, id);
+			} else {
+				if(moveSecondary == 1) {
+					if(this.checkUp(currRow, endRow, currCol, endCol, person, id)) {
+						this.moveUp(currRow, endRow, currCol, endCol, person, id);
+					} else {
+						console.log('pass');
+					}
+				} else if(moveSecondary == 3) {
+					if(this.checkDown(currRow, endRow, currCol, endCol, person, id)) {
+						this.moveDown(currRow, endRow, currCol, endCol, person, id);
+					} else {
+						console.log('pass');
+					}
+				}
+			}
+		}
+
+		/*if(movePrimary == 1 && moveSecondary == 2 && dir == 1) {
+			if(this.checkUp(currRow, endRow, currCol, endCol, person, id)) {
+				console.log('up');
+				this.moveUp(currRow, endRow, currCol, endCol, person, id);
+			} else if(this.checkRight(currRow, endRow, currCol, endCol, person, id)) {
+				console.log('right');
+				this.moveRight(currRow, endRow, currCol, endCol, person, id);
+			} else {
+				console.log('pass');
+			}
+		} else if(movePrimary == 1 && moveSecondary == 4) {
+			if(this.checkUp(currRow, endRow, currCol, endCol, person, id)) {
+				console.log('up');
+				this.moveUp(currRow, endRow, currCol, endCol, person, id);
+			} else if(this.checkLeft(currRow, endRow, currCol, endCol, person, id)) {
+				console.log('left');
+				this.moveLeft(currRow, endRow, currCol, endCol, person, id);
+			} else {
+				console.log('pass');
+			}
+		} else if(movePrimary == 3 && moveSecondary == 2) {
+			if(this.checkDown(currRow, endRow, currCol, endCol, person, id)) {
+				console.log('down');
+				this.moveDown(currRow, endRow, currCol, endCol, person, id);
+			} else if(this.checkRight(currRow, endRow, currCol, endCol, person, id)) {
+				console.log('right');
+				this.moveRight(currRow, endRow, currCol, endCol, person, id);
+			} else {
+				console.log('pass');
+			}
+		} else if(movePrimary == 3 && moveSecondary == 4) {
+			if(this.checkDown(currRow, endRow, currCol, endCol, person, id)) {
+				console.log('down');
+				this.moveDown(currRow, endRow, currCol, endCol, person, id);
+			} else if(this.checkLeft(currRow, endRow, currCol, endCol, person, id)) {
+				console.log('left');
+				this.moveLeft(currRow, endRow, currCol, endCol, person, id);
+			} else {
+				console.log('pass');
+			}
+		} else if(movePrimary == 2 && moveSecondary == 1) {
+			if(this.checkRight(currRow, endRow, currCol, endCol, person, id)) {
+				console.log('right');
+				this.moveRight(currRow, endRow, currCol, endCol, person, id);
+			} else if(this.checkUp(currRow, endRow, currCol, endCol, person, id)) {
+				console.log('up');
+				this.moveUp(currRow, endRow, currCol, endCol, person, id);
+			} else {
+				console.log('pass');
+			}
+		} else if(movePrimary == 2 && moveSecondary == 3) {
+			if(this.checkRight(currRow, endRow, currCol, endCol, person, id)) {
+				console.log('right');
+				this.moveRight(currRow, endRow, currCol, endCol, person, id);
+			} else if(this.checkDown(currRow, endRow, currCol, endCol, person, id)) {
+				console.log('down');
+				this.moveDown(currRow, endRow, currCol, endCol, person, id);
+			} else {
+				console.log('pass');
+			}
+		} else if(movePrimary == 4 && moveSecondary == 1) {
+			if(this.checkLeft(currRow, endRow, currCol, endCol, person, id)) {
+				console.log('left');
+				this.moveLeft(currRow, endRow, currCol, endCol, person, id);
+			} else if(this.checkUp(currRow, endRow, currCol, endCol, person, id)) {
+				console.log('up');
+				this.moveUp(currRow, endRow, currCol, endCol, person, id);
+			} else {
+				console.log('pass');
+			}
+		} else if(movePrimary == 4 && moveSecondary == 3) {
+			if(this.checkLeft(currRow, endRow, currCol, endCol, person, id)) {
+				console.log('left');
+				this.moveLeft(currRow, endRow, currCol, endCol, person, id);
+			} else if(this.checkDown(currRow, endRow, currCol, endCol, person, id)) {
+				console.log('down');
+				this.moveDown(currRow, endRow, currCol, endCol, person, id);
+			} else {
+				console.log('pass');
+			}
+		}*/
+	},
+
 	this.getDirection = function(currRow, endRow, currCol, endCol, person, id, cbf) {
 			var totalHorz = Math.abs(currCol - endCol),
-				totalVert = Math.abs(currRow - endRow);
+				totalVert = Math.abs(currRow - endRow),
+				movePrimary = 0, moveSecondary = 0;
+
+			/* Check Primary and Secondary moves */
+			if (endRow == 1) {
+				movePrimary = 1;
+				if(endCol == 1 || endCol == 2) {
+					moveSecondary = 4;
+				} else if(endCol == app.vars.cols || endCol == app.vars.cols - 1) {
+					moveSecondary = 2;
+				}
+			} else if (endRow == app.vars.rows) {
+				movePrimary = 3;
+				if(endCol == 1 || endCol == 2) {
+					moveSecondary = 4;
+				} else if(endCol == app.vars.cols || endCol == app.vars.cols - 1) {
+					moveSecondary = 2;
+				}
+			} else if (endCol == 1) {
+				movePrimary = 4;
+				if (endRow == 1 || endRow == 2) {
+					moveSecondary = 1;
+				} else if (endRow == app.vars.rows || endRow == app.vars.rows -1) {
+					moveSecondary = 3;
+				}
+			} else if (endCol == app.vars.cols) {
+				movePrimary = 2;
+				if (endRow == 1 || endRow == 2) {
+					moveSecondary = 1;
+				} else if (endRow == app.vars.rows || endRow == app.vars.rows -1) {
+					moveSecondary = 3;
+				}
+			}
+
+
 
 			if (endRow == 1) {
 				if(currCol == endCol && currRow == endRow) {
 					this.moveExit(currRow, endRow, currCol, endCol, person, id);
 				} else if(currRow > endRow) {
-					// console.log(person + ' will move up 1');
-					this.moveUp(currRow, endRow, currCol, endCol, person, id);
+
+					console.log(currRow, endRow, currCol, endCol, person, id, movePrimary, moveSecondary, 1);
+					this.allowedDirection(currRow, endRow, currCol, endCol, person, id, movePrimary, moveSecondary, 1);
+
+					/*this.moveUp(currRow, endRow, currCol, endCol, person, id);*/
 				} else if(currCol < endCol) {
 					if(totalVert == 0) {
-						// console.log(person + ' will move right 2');
-						this.moveRight(currRow, endRow, currCol, endCol, person, id);
+						
+						/*this.moveRight(currRow, endRow, currCol, endCol, person, id);*/
+						console.log(currRow, endRow, currCol, endCol, person, id, movePrimary, moveSecondary, 2);
+						this.allowedDirection(currRow, endRow, currCol, endCol, person, id, movePrimary, moveSecondary, 2);
 					} else {
-						// console.log(person + ' will move right 3');
-						this.moveRight(currRow, endRow, currCol, endCol, person, id);
+						
+						/*this.moveRight(currRow, endRow, currCol, endCol, person, id);*/
+						console.log(currRow, endRow, currCol, endCol, person, id, movePrimary, moveSecondary, 2);
+						this.allowedDirection(currRow, endRow, currCol, endCol, person, id, movePrimary, moveSecondary, 2);
 					}
 				} else {
 					if(totalVert == 0) {
-						// console.log(person + ' will move left 4');
-						this.moveLeft(currRow, endRow, currCol, endCol, person, id);
+
+						/*this.moveLeft(currRow, endRow, currCol, endCol, person, id);*/
+						console.log(currRow, endRow, currCol, endCol, person, id, movePrimary, moveSecondary, 4);
+						this.allowedDirection(currRow, endRow, currCol, endCol, person, id, movePrimary, moveSecondary, 4);
 					} else {
-						// console.log(person + ' will move left 5');
-						this.moveLeft(currRow, endRow, currCol, endCol, person, id);
+						
+						/*this.moveLeft(currRow, endRow, currCol, endCol, person, id);*/
+						console.log(currRow, endRow, currCol, endCol, person, id, movePrimary, moveSecondary, 4);
+						this.allowedDirection(currRow, endRow, currCol, endCol, person, id, movePrimary, moveSecondary, 4);
 					}
 				}
 			} else if (endRow == app.vars.rows) {
 				if(currCol == endCol && currRow == endRow) {
 					this.moveExit(currRow, endRow, currCol, endCol, person, id);
 				} else if (currRow < endRow) {
-					// console.log(person + ' will move down 6');
-					this.moveDown(currRow, endRow, currCol, endCol, person, id);
+					
+					/*this.moveDown(currRow, endRow, currCol, endCol, person, id);*/
+					console.log(currRow, endRow, currCol, endCol, person, id, movePrimary, moveSecondary, 3);
+					this.allowedDirection(currRow, endRow, currCol, endCol, person, id, movePrimary, moveSecondary, 3);
 				} else if(currCol < endCol) {
 					if (totalVert == 0) {
-						// console.log(person + ' will move right 7');
-						this.moveRight(currRow, endRow, currCol, endCol, person, id);
+						
+						/*this.moveRight(currRow, endRow, currCol, endCol, person, id);*/
+						console.log(currRow, endRow, currCol, endCol, person, id, movePrimary, moveSecondary, 2);
+						this.allowedDirection(currRow, endRow, currCol, endCol, person, id, movePrimary, moveSecondary, 2);
 					} else {
-						// console.log(person + ' will move right 8');
-						this.moveRight(currRow, endRow, currCol, endCol, person, id);
+						
+						/*this.moveRight(currRow, endRow, currCol, endCol, person, id);*/
+						console.log(currRow, endRow, currCol, endCol, person, id, movePrimary, moveSecondary, 2);
+						this.allowedDirection(currRow, endRow, currCol, endCol, person, id, movePrimary, moveSecondary, 2);
 					}
 				} else {
 					if (totalVert == 0) {
-						// console.log(person + ' will move left 9');
-						this.moveLeft(currRow, endRow, currCol, endCol, person, id);
+						
+						/*this.moveLeft(currRow, endRow, currCol, endCol, person, id);*/
+						console.log(currRow, endRow, currCol, endCol, person, id, movePrimary, moveSecondary, 4);
+						this.allowedDirection(currRow, endRow, currCol, endCol, person, id, movePrimary, moveSecondary, 4);
 					} else {
-						// console.log(person + ' will move left 10');
-						this.moveLeft(currRow, endRow, currCol, endCol, person, id);
+						
+						/*this.moveLeft(currRow, endRow, currCol, endCol, person, id);*/
+						console.log(currRow, endRow, currCol, endCol, person, id, movePrimary, moveSecondary, 4);
+						this.allowedDirection(currRow, endRow, currCol, endCol, person, id, movePrimary, moveSecondary, 4);
 					}
 				}
 			} else if (endCol == 1) {
 				if(currCol == endCol && currRow == endRow) {
 					this.moveExit(currRow, endRow, currCol, endCol, person, id);
 				} else if(currCol > endCol) {
-					// console.log(person + ' will move left 11');
-					this.moveLeft(currRow, endRow, currCol, endCol, person, id);
+					
+					/*this.moveLeft(currRow, endRow, currCol, endCol, person, id);*/
+					console.log(currRow, endRow, currCol, endCol, person, id, movePrimary, moveSecondary, 4);
+					this.allowedDirection(currRow, endRow, currCol, endCol, person, id, movePrimary, moveSecondary, 4);
 				} else if(currRow < endRow) {
 					if (totalHorz == 0) {
-						// console.log(person + ' will move down 12');
-						this.moveDown(currRow, endRow, currCol, endCol, person, id);
+						
+						/*this.moveDown(currRow, endRow, currCol, endCol, person, id);*/
+						console.log(currRow, endRow, currCol, endCol, person, id, movePrimary, moveSecondary, 3);
+						this.allowedDirection(currRow, endRow, currCol, endCol, person, id, movePrimary, moveSecondary, 3);
 					} else {
-						// console.log(person + ' will move down 13');
-						this.moveDown(currRow, endRow, currCol, endCol, person, id);
+						
+						/*this.moveDown(currRow, endRow, currCol, endCol, person, id);*/
+						console.log(currRow, endRow, currCol, endCol, person, id, movePrimary, moveSecondary, 3);
+						this.allowedDirection(currRow, endRow, currCol, endCol, person, id, movePrimary, moveSecondary, 3);
 					}
 				} else {
 					if (totalHorz == 0) {
-						// console.log(person + ' will move up 14');
-						this.moveUp(currRow, endRow, currCol, endCol, person, id);
+						
+						/*this.moveUp(currRow, endRow, currCol, endCol, person, id);*/
+						console.log(currRow, endRow, currCol, endCol, person, id, movePrimary, moveSecondary, 1);
+						this.allowedDirection(currRow, endRow, currCol, endCol, person, id, movePrimary, moveSecondary, 1);
 					} else {
-						// console.log(person + ' will move up 15');
-						this.moveUp(currRow, endRow, currCol, endCol, person, id);
+						
+						/*this.moveUp(currRow, endRow, currCol, endCol, person, id);*/
+						console.log(currRow, endRow, currCol, endCol, person, id, movePrimary, moveSecondary, 1);
+						this.allowedDirection(currRow, endRow, currCol, endCol, person, id, movePrimary, moveSecondary, 1);
 					}
 				}
 			} else if (endCol == app.vars.cols) {
 				if(currCol == endCol && currRow == endRow) {
 					this.moveExit(currRow, endRow, currCol, endCol, person, id);
 				} else if(currCol < endCol) {
-					//console.log(person + ' will move right 16');
-					this.moveRight(currRow, endRow, currCol, endCol, person, id);
+					
+					/*this.moveRight(currRow, endRow, currCol, endCol, person, id);*/
+					console.log(currRow, endRow, currCol, endCol, person, id, movePrimary, moveSecondary, 2);
+					this.allowedDirection(currRow, endRow, currCol, endCol, person, id, movePrimary, moveSecondary, 2);
 
 				} else if(currRow < endRow) {
 					if (totalHorz == 0) {
-						// console.log(person + ' will move down 17');
-						this.moveDown(currRow, endRow, currCol, endCol, person, id);
+						
+						/*this.moveDown(currRow, endRow, currCol, endCol, person, id);*/
+						console.log(currRow, endRow, currCol, endCol, person, id, movePrimary, moveSecondary, 3);
+						this.allowedDirection(currRow, endRow, currCol, endCol, person, id, movePrimary, moveSecondary, 3);
 					} else {
-						// console.log(person + ' will move down 18');
-						this.moveDown(currRow, endRow, currCol, endCol, person, id);
+						
+						/*this.moveDown(currRow, endRow, currCol, endCol, person, id);*/
+						console.log(currRow, endRow, currCol, endCol, person, id, movePrimary, moveSecondary, 3);
+						this.allowedDirection(currRow, endRow, currCol, endCol, person, id, movePrimary, moveSecondary, 3);
 					}
 				} else {
 					if (totalHorz == 0) {
-						this.moveUp(currRow, endRow, currCol, endCol, person, id);
+						/*this.moveUp(currRow, endRow, currCol, endCol, person, id);*/
+						console.log(currRow, endRow, currCol, endCol, person, id, movePrimary, moveSecondary, 1);
+						this.allowedDirection(currRow, endRow, currCol, endCol, person, id, movePrimary, moveSecondary, 1);
 					} else {
-						this.moveUp(currRow, endRow, currCol, endCol, person, id);
+						/*this.moveUp(currRow, endRow, currCol, endCol, person, id);*/
+						console.log(currRow, endRow, currCol, endCol, person, id, movePrimary, moveSecondary, 1);
+						this.allowedDirection(currRow, endRow, currCol, endCol, person, id, movePrimary, moveSecondary, 1);
 					}
 				}
 			}
@@ -1195,11 +1469,7 @@ function person(startCol, endCol, startRow, endRow, num, steps,currCol, currRow)
 			} else {
 				return false;
 			}
-		},
-
-		this.moveUps = function(currRow, endRow, currCol, endCol, person, id, cbf) {
-			this.updatePeopleList((currRow-1), endRow, currCol, endCol, person, id);
-		},
+		};
 
 		this.moveUp = function(currRow, endRow, currCol, endCol, person, id, cbf) {
 
@@ -1214,6 +1484,14 @@ function person(startCol, endCol, startRow, endRow, num, steps,currCol, currRow)
 
 			if(typeof cbf == 'function') {
 				cbf.call(this);
+			}
+		};
+
+		this.checkRight = function(currRow, endRow, currCol, endCol, person, id, cbf) {
+			if(!jQuery('.classroom-wrap li[data-row=' + currRow + '][data-col=' + (currCol+1) + ']').hasClass('people')) {
+				return true;
+			} else {
+				return false;
 			}
 		};
 
@@ -1233,6 +1511,14 @@ function person(startCol, endCol, startRow, endRow, num, steps,currCol, currRow)
 			}
 		};
 
+		this.checkDown = function(currRow, endRow, currCol, endCol, person, id, cbf) {
+			if(!jQuery('.classroom-wrap li[data-row=' + (currRow+1) + '][data-col=' + currCol + ']').hasClass('people')) {
+				return true;
+			} else {
+				return false;
+			}
+		};
+
 		this.moveDown = function(currRow, endRow, currCol, endCol, person, id, cbf) {
 
 			if(!jQuery('.classroom-wrap li[data-row=' + (currRow+1) + '][data-col=' + currCol + ']').hasClass('people')) {
@@ -1249,9 +1535,15 @@ function person(startCol, endCol, startRow, endRow, num, steps,currCol, currRow)
 			}
 		};
 
-		this.moveLeft = function(currRow, endRow, currCol, endCol, person, id, cbf) {
+		this.checkLeft = function(currRow, endRow, currCol, endCol, person, id, cbf) {
+			if(!jQuery('.classroom-wrap li[data-row=' + currRow + '][data-col=' + (currCol-1) + ']').hasClass('people')) {
+				return true;
+			} else {
+				return false;
+			}
+		},
 
-			console.log(currRow, endRow, currCol, endCol, person);
+		this.moveLeft = function(currRow, endRow, currCol, endCol, person, id, cbf) {
 
 			if(!jQuery('.classroom-wrap li[data-row=' + currRow + '][data-col=' + (currCol-1) + ']').hasClass('people')) {
 
