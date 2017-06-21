@@ -17,7 +17,7 @@ var app = {
 		numOfPeople: 0,
 		people: {},
 		sortedPeople: [{}],
-		timeInter: 1500,
+		timeInter: 800,
 		dtd: {},
 		currStep: 0,
 		maxSteps: 0,
