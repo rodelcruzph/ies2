@@ -1099,11 +1099,7 @@ var app = {
 			//
 			// currSec = parseInt(currTime.substr(timeSep+1, 2));
 
-			console.log(currSec);
-
 			newSec = parseInt(currSec) + 45;
-
-			console.log(newSec);
 
 			if(newSec > 59) {
 
@@ -1211,13 +1207,13 @@ function person(startCol, endCol, startRow, endRow, num, steps,currCol, currRow)
 					if(this.checkRight(currRow, endRow, currCol, endCol, person, id)) {
 						this.moveRight(currRow, endRow, currCol, endCol, person, id);
 					} else {
-						console.log('pass');
+						// console.log('pass');
 					}
 				} else if(moveSecondary == 4) {
 					if(this.checkLeft(currRow, endRow, currCol, endCol, person, id)) {
 						this.moveLeft(currRow, endRow, currCol, endCol, person, id);
 					} else {
-						console.log('pass');
+						// console.log('pass');
 					}
 				}
 			}
@@ -1229,13 +1225,13 @@ function person(startCol, endCol, startRow, endRow, num, steps,currCol, currRow)
 					if(this.checkUp(currRow, endRow, currCol, endCol, person, id)) {
 						this.moveUp(currRow, endRow, currCol, endCol, person, id);
 					} else {
-						console.log('pass');
+						// console.log('pass');
 					}
 				} else if(moveSecondary == 3) {
 					if(this.checkDown(currRow, endRow, currCol, endCol, person, id)) {
 						this.moveDown(currRow, endRow, currCol, endCol, person, id);
 					} else {
-						console.log('pass');
+						// console.log('pass');
 					}
 				}
 			}
@@ -1247,13 +1243,13 @@ function person(startCol, endCol, startRow, endRow, num, steps,currCol, currRow)
 					if(this.checkRight(currRow, endRow, currCol, endCol, person, id)) {
 						this.moveRight(currRow, endRow, currCol, endCol, person, id);
 					} else {
-						console.log('pass');
+						// console.log('pass');
 					}
 				} else if(moveSecondary == 4) {
 					if(this.checkLeft(currRow, endRow, currCol, endCol, person, id)) {
 						this.moveLeft(currRow, endRow, currCol, endCol, person, id);
 					} else {
-						console.log('pass');
+						// console.log('pass');
 					}
 				}
 			}
@@ -1265,13 +1261,13 @@ function person(startCol, endCol, startRow, endRow, num, steps,currCol, currRow)
 					if(this.checkUp(currRow, endRow, currCol, endCol, person, id)) {
 						this.moveUp(currRow, endRow, currCol, endCol, person, id);
 					} else {
-						console.log('pass');
+						// console.log('pass');
 					}
 				} else if(moveSecondary == 3) {
 					if(this.checkDown(currRow, endRow, currCol, endCol, person, id)) {
 						this.moveDown(currRow, endRow, currCol, endCol, person, id);
 					} else {
-						console.log('pass');
+						// console.log('pass');
 					}
 				}
 			}
@@ -1542,11 +1538,9 @@ function person(startCol, endCol, startRow, endRow, num, steps,currCol, currRow)
 
 			// Delete object
 
-			// var curr = jQuery.grep(people, function(el) {
-			// 	return el.num != person;
-			// });
-			//
-			// delete people[];
+			people = jQuery.grep(people, function(el) {
+				return el.num != person;
+			});
 
 			// console.log(person);
 
