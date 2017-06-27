@@ -1,11 +1,11 @@
 ( function($) {
-	
+
 	jQuery(document).ready( function() {
-		
+
 		app.init();
 
 	});
-	
+
 })();
 
 var app = {
@@ -65,7 +65,7 @@ var app = {
 				}
 			}
 		}
-		
+
 
 		if(empty == true) {
 			alert('Please fill out form completely');
@@ -83,7 +83,7 @@ var app = {
 				app.setDoorVar(jQuery('input[name="door-count"]:checked').attr('value'), [[jQuery('#face-select-1').val(), jQuery('input[name="dfr-1"]:checked').val()], [jQuery('#face-select-2').val(), jQuery('input[name="dfr-2"]:checked').val()]]);
 			}
 
-				
+
 		}
 
 		if(typeof cbf == 'function') {
@@ -124,7 +124,7 @@ var app = {
 
 				case '1':
 					// Upper
-					console.log('face top \n');
+					// console.log('face top \n');
 					app.vars.doors[i].x = 1;
 					app.vars.doors[i+1].x = 1;
 
@@ -134,7 +134,7 @@ var app = {
 
 				case '2':
 					// Lower
-					console.log('face bottom \n');
+					// console.log('face bottom \n');
 					app.vars.doors[i].x = app.vars.rows;
 					app.vars.doors[i+1].x = app.vars.rows;
 
@@ -144,7 +144,7 @@ var app = {
 
 				case '3':
 					// Left
-					console.log('face left \n');
+					// console.log('face left \n');
 					app.vars.doors[i].y = 1;
 					app.vars.doors[i+1].y = 1;
 
@@ -154,7 +154,7 @@ var app = {
 
 				case '4':
 					// Right
-					console.log('face right \n');
+					// console.log('face right \n');
 					app.vars.doors[i].y = app.vars.cols;
 					app.vars.doors[i+1].y = app.vars.cols;
 
@@ -563,7 +563,6 @@ var app = {
 							</div> \
 							<div class="btns-holder"> \
 								<a href="javascript:;" class="play-btn">Start</a> \
-								<a href="javascript:;" class="stop-btn">Stop</a> \
 							</div> \
 						</div> \
 					</div>';
@@ -596,21 +595,20 @@ var app = {
 			e.preventDefault();
 			e.stopPropagation();
 
+			app.stopWatch.init();
+
 			var i;
 
 			for(i = 0; i < people.length; i++) {
 				people[i].movePerson();
 			}
 
-			app.timer();
-
 			var globalInterval = setInterval(function() {
 				if(!app.checkRoom()) {
-					console.log('stop time');
-					app.timer.Timer.stop();
-					clearInterval(globalInterval);
-
+					console.log('stop timer');
+					app.stopWatch.stop();
 					app.modifyTimer();
+					clearInterval(globalInterval);
 				}
 			}, app.vars.timeInter);
 		});
@@ -682,7 +680,7 @@ var app = {
 		if(typeof cbf == 'function') {
 			cbf.call(this);
 		}
-		
+
 	},
 
 	addPeople: function(cbf) {
@@ -691,7 +689,7 @@ var app = {
 
 		jQuery('#number').text(currPeople + ' people');
 
-		var randomElements = jQuery("li").get().sort(function(){ 
+		var randomElements = jQuery("li").get().sort(function(){
 			  return Math.round(Math.random())-0.5
 			}).slice(0,currPeople);
 
@@ -824,7 +822,7 @@ var app = {
 					});
 		}
 
-		console.log(app.vars.ptd.length);
+		// console.log(app.vars.ptd.length);
 
 		if (app.vars.ptd.length < 3) {
 			for(var i = 0; i <= app.vars.ptd.length - 2; i++) {
@@ -852,7 +850,7 @@ var app = {
 			}
 		}
 
-			
+
 
 		console.log(getFrom);
 
@@ -878,7 +876,7 @@ var app = {
 			}
 		}
 
-			
+
 
 		console.log(getNumPeople);
 
@@ -966,8 +964,78 @@ var app = {
 		}
 	},
 
-	timer: function() {
-		
+	stopWatch: {
+		vars: {
+			h1: '',
+			seconds: 0,
+			minutes: 0,
+			hours: 0,
+			t: 0
+		},
+
+		init: function() {
+			app.stopWatch.vars.h1 = jQuery('#stop-watch')[0];
+			app.stopWatch.start();
+		},
+
+		add: function() {
+
+			app.stopWatch.vars.seconds++;
+			if (app.stopWatch.vars.seconds >= 60) {
+					app.stopWatch.vars.seconds = 0;
+					app.stopWatch.vars.minutes++;
+					if (app.stopWatch.vars.minutes >= 60) {
+							app.stopWatch.vars.minutes = 0;
+							app.stopWatch.vars.hours++;
+					}
+			}
+
+			app.stopWatch.vars.h1.textContent = (app.stopWatch.vars.hours ? (app.stopWatch.vars.hours > 9 ? app.stopWatch.vars.hours : "0" + app.stopWatch.vars.hours) : "00") + ":" + (app.stopWatch.vars.minutes ? (app.stopWatch.vars.minutes > 9 ? app.stopWatch.vars.minutes : "0" + app.stopWatch.vars.minutes) : "00") + ":" + (app.stopWatch.vars.seconds > 9 ? app.stopWatch.vars.seconds : "0" + app.stopWatch.vars.seconds);
+
+			app.stopWatch.start();
+		},
+
+		start: function() {
+			app.stopWatch.vars.t = setTimeout(app.stopWatch.add, 1000);
+		},
+
+		stop: function() {
+			clearTimeout(app.stopWatch.vars.t);
+		}
+	},
+
+	timers: function() {
+		var h1 = jQuery('#stop-watch')[0],
+				seconds = 0, minutes = 0, hours = 0, t;
+
+		function add() {
+			console.log(seconds);
+		    seconds++;
+		    if (seconds >= 60) {
+		        seconds = 0;
+		        minutes++;
+		        if (minutes >= 60) {
+		            minutes = 0;
+		            hours++;
+		        }
+		    }
+
+		    h1.textContent = (hours ? (hours > 9 ? hours : "0" + hours) : "00") + ":" + (minutes ? (minutes > 9 ? minutes : "0" + minutes) : "00") + ":" + (seconds > 9 ? seconds : "0" + seconds);
+
+		    timer();
+		}
+		function timer() {
+		    t = setTimeout(add, 1000);
+		}
+		timer();
+
+		function stop() {
+			clearTimeout(t);
+		}
+	},
+
+	timerOld: function() {
+
 		// Stopwatch element on the page
 		var $stopwatch;
 
@@ -980,7 +1048,7 @@ var app = {
 		// Start the timer
 		jQuery(function() {
 			$stopwatch = jQuery('#stop-watch');
-			app.timer.Timer = jQuery.timer(updateTimer, incrementTime, true);  
+			app.timer.Timer = jQuery.timer(updateTimer, incrementTime, true);
 		});
 
 		// Output time and increment
@@ -1009,7 +1077,7 @@ var app = {
 				hundredths = pad(time - (sec * 100) - (min * 6000), 2);
 			return (min > 0 ? pad(min, 2) : "00") + ":" + pad(sec, 2) + ":" + hundredths;
 		}
-		
+
 	},
 
 	checkRoom: function() {
@@ -1022,21 +1090,43 @@ var app = {
 
 	modifyTimer: function() {
 		var currTime = jQuery('#stop-watch').html(),
-			currMin = currTime.substr(0, 2),
-			currMm = currTime.substr(6, 2),
-			timeSep, newTime;
+			currHr = currTime.substr(0, 2),
+			currMin = currTime.substr(3, 2),
+			currSec = currTime.substr(6, 2),
+			newSec, newMin, newTime;
 
-			timeSep = currTime.indexOf(":");
+			// timeSep = currTime.indexOf(":");
+			//
+			// currSec = parseInt(currTime.substr(timeSep+1, 2));
 
-			newTime = currTime.substr(timeSep+1, 2);
+			console.log(currSec);
 
-			console.log(currMin + ":" + (45 + parseInt(newTime)) + ":" + currMm);
+			newSec = parseInt(currSec) + 45;
 
-			jQuery('.timer').append('<p>+ 45 seconds</p><hr /><p>' + currMin + ':' + (45 + parseInt(newTime)) + ':' + currMm + '</p>');
+			console.log(newSec);
+
+			if(newSec > 59) {
+
+				// Get minutes
+				newMin = Math.floor(newSec / 60);
+				newSec = newSec % 60;
+
+				if(newMin <= 9 ) {
+					newMin = "0" + newMin;
+				}
+
+				if(newSec <= 9) {
+					newSec = "0" + newSec;
+				}
+
+			} else {
+				newMin = currMin;
+			}
+
+			jQuery('.timer').append('<p>+ 45 seconds</p><hr /><p>' + currHr + ':' + newMin + ':' + newSec + '</p>');
 	}
 
 }
-
 
 function person(startCol, endCol, startRow, endRow, num, steps,currCol, currRow) {
 
@@ -1107,7 +1197,7 @@ function person(startCol, endCol, startRow, endRow, num, steps,currCol, currRow)
 				}
 
 			}, app.vars.timeInter);*/
-			
+
 	};
 
 	this.allowedDirection = function(currRow, endRow, currCol, endCol, person, id, movePrimary, moveSecondary, dir) {
@@ -1313,32 +1403,32 @@ function person(startCol, endCol, startRow, endRow, num, steps,currCol, currRow)
 					this.moveExit(currRow, endRow, currCol, endCol, person, id);
 				} else if(currRow > endRow) {
 
-					console.log(currRow, endRow, currCol, endCol, person, id, movePrimary, moveSecondary, 1);
+					// console.log(currRow, endRow, currCol, endCol, person, id, movePrimary, moveSecondary, 1);
 					this.allowedDirection(currRow, endRow, currCol, endCol, person, id, movePrimary, moveSecondary, 1);
 
 					/*this.moveUp(currRow, endRow, currCol, endCol, person, id);*/
 				} else if(currCol < endCol) {
 					if(totalVert == 0) {
-						
+
 						/*this.moveRight(currRow, endRow, currCol, endCol, person, id);*/
-						console.log(currRow, endRow, currCol, endCol, person, id, movePrimary, moveSecondary, 2);
+						// console.log(currRow, endRow, currCol, endCol, person, id, movePrimary, moveSecondary, 2);
 						this.allowedDirection(currRow, endRow, currCol, endCol, person, id, movePrimary, moveSecondary, 2);
 					} else {
-						
+
 						/*this.moveRight(currRow, endRow, currCol, endCol, person, id);*/
-						console.log(currRow, endRow, currCol, endCol, person, id, movePrimary, moveSecondary, 2);
+						// console.log(currRow, endRow, currCol, endCol, person, id, movePrimary, moveSecondary, 2);
 						this.allowedDirection(currRow, endRow, currCol, endCol, person, id, movePrimary, moveSecondary, 2);
 					}
 				} else {
 					if(totalVert == 0) {
 
 						/*this.moveLeft(currRow, endRow, currCol, endCol, person, id);*/
-						console.log(currRow, endRow, currCol, endCol, person, id, movePrimary, moveSecondary, 4);
+						// console.log(currRow, endRow, currCol, endCol, person, id, movePrimary, moveSecondary, 4);
 						this.allowedDirection(currRow, endRow, currCol, endCol, person, id, movePrimary, moveSecondary, 4);
 					} else {
-						
+
 						/*this.moveLeft(currRow, endRow, currCol, endCol, person, id);*/
-						console.log(currRow, endRow, currCol, endCol, person, id, movePrimary, moveSecondary, 4);
+						// console.log(currRow, endRow, currCol, endCol, person, id, movePrimary, moveSecondary, 4);
 						this.allowedDirection(currRow, endRow, currCol, endCol, person, id, movePrimary, moveSecondary, 4);
 					}
 				}
@@ -1346,32 +1436,32 @@ function person(startCol, endCol, startRow, endRow, num, steps,currCol, currRow)
 				if(currCol == endCol && currRow == endRow) {
 					this.moveExit(currRow, endRow, currCol, endCol, person, id);
 				} else if (currRow < endRow) {
-					
+
 					/*this.moveDown(currRow, endRow, currCol, endCol, person, id);*/
-					console.log(currRow, endRow, currCol, endCol, person, id, movePrimary, moveSecondary, 3);
+					// console.log(currRow, endRow, currCol, endCol, person, id, movePrimary, moveSecondary, 3);
 					this.allowedDirection(currRow, endRow, currCol, endCol, person, id, movePrimary, moveSecondary, 3);
 				} else if(currCol < endCol) {
 					if (totalVert == 0) {
-						
+
 						/*this.moveRight(currRow, endRow, currCol, endCol, person, id);*/
-						console.log(currRow, endRow, currCol, endCol, person, id, movePrimary, moveSecondary, 2);
+						// console.log(currRow, endRow, currCol, endCol, person, id, movePrimary, moveSecondary, 2);
 						this.allowedDirection(currRow, endRow, currCol, endCol, person, id, movePrimary, moveSecondary, 2);
 					} else {
-						
+
 						/*this.moveRight(currRow, endRow, currCol, endCol, person, id);*/
-						console.log(currRow, endRow, currCol, endCol, person, id, movePrimary, moveSecondary, 2);
+						// console.log(currRow, endRow, currCol, endCol, person, id, movePrimary, moveSecondary, 2);
 						this.allowedDirection(currRow, endRow, currCol, endCol, person, id, movePrimary, moveSecondary, 2);
 					}
 				} else {
 					if (totalVert == 0) {
-						
+
 						/*this.moveLeft(currRow, endRow, currCol, endCol, person, id);*/
-						console.log(currRow, endRow, currCol, endCol, person, id, movePrimary, moveSecondary, 4);
+						// console.log(currRow, endRow, currCol, endCol, person, id, movePrimary, moveSecondary, 4);
 						this.allowedDirection(currRow, endRow, currCol, endCol, person, id, movePrimary, moveSecondary, 4);
 					} else {
-						
+
 						/*this.moveLeft(currRow, endRow, currCol, endCol, person, id);*/
-						console.log(currRow, endRow, currCol, endCol, person, id, movePrimary, moveSecondary, 4);
+						// console.log(currRow, endRow, currCol, endCol, person, id, movePrimary, moveSecondary, 4);
 						this.allowedDirection(currRow, endRow, currCol, endCol, person, id, movePrimary, moveSecondary, 4);
 					}
 				}
@@ -1379,32 +1469,32 @@ function person(startCol, endCol, startRow, endRow, num, steps,currCol, currRow)
 				if(currCol == endCol && currRow == endRow) {
 					this.moveExit(currRow, endRow, currCol, endCol, person, id);
 				} else if(currCol > endCol) {
-					
+
 					/*this.moveLeft(currRow, endRow, currCol, endCol, person, id);*/
-					console.log(currRow, endRow, currCol, endCol, person, id, movePrimary, moveSecondary, 4);
+					// console.log(currRow, endRow, currCol, endCol, person, id, movePrimary, moveSecondary, 4);
 					this.allowedDirection(currRow, endRow, currCol, endCol, person, id, movePrimary, moveSecondary, 4);
 				} else if(currRow < endRow) {
 					if (totalHorz == 0) {
-						
+
 						/*this.moveDown(currRow, endRow, currCol, endCol, person, id);*/
-						console.log(currRow, endRow, currCol, endCol, person, id, movePrimary, moveSecondary, 3);
+						// console.log(currRow, endRow, currCol, endCol, person, id, movePrimary, moveSecondary, 3);
 						this.allowedDirection(currRow, endRow, currCol, endCol, person, id, movePrimary, moveSecondary, 3);
 					} else {
-						
+
 						/*this.moveDown(currRow, endRow, currCol, endCol, person, id);*/
-						console.log(currRow, endRow, currCol, endCol, person, id, movePrimary, moveSecondary, 3);
+						// console.log(currRow, endRow, currCol, endCol, person, id, movePrimary, moveSecondary, 3);
 						this.allowedDirection(currRow, endRow, currCol, endCol, person, id, movePrimary, moveSecondary, 3);
 					}
 				} else {
 					if (totalHorz == 0) {
-						
+
 						/*this.moveUp(currRow, endRow, currCol, endCol, person, id);*/
-						console.log(currRow, endRow, currCol, endCol, person, id, movePrimary, moveSecondary, 1);
+						// console.log(currRow, endRow, currCol, endCol, person, id, movePrimary, moveSecondary, 1);
 						this.allowedDirection(currRow, endRow, currCol, endCol, person, id, movePrimary, moveSecondary, 1);
 					} else {
-						
+
 						/*this.moveUp(currRow, endRow, currCol, endCol, person, id);*/
-						console.log(currRow, endRow, currCol, endCol, person, id, movePrimary, moveSecondary, 1);
+						// console.log(currRow, endRow, currCol, endCol, person, id, movePrimary, moveSecondary, 1);
 						this.allowedDirection(currRow, endRow, currCol, endCol, person, id, movePrimary, moveSecondary, 1);
 					}
 				}
@@ -1412,31 +1502,31 @@ function person(startCol, endCol, startRow, endRow, num, steps,currCol, currRow)
 				if(currCol == endCol && currRow == endRow) {
 					this.moveExit(currRow, endRow, currCol, endCol, person, id);
 				} else if(currCol < endCol) {
-					
+
 					/*this.moveRight(currRow, endRow, currCol, endCol, person, id);*/
-					console.log(currRow, endRow, currCol, endCol, person, id, movePrimary, moveSecondary, 2);
+					// console.log(currRow, endRow, currCol, endCol, person, id, movePrimary, moveSecondary, 2);
 					this.allowedDirection(currRow, endRow, currCol, endCol, person, id, movePrimary, moveSecondary, 2);
 
 				} else if(currRow < endRow) {
 					if (totalHorz == 0) {
-						
+
 						/*this.moveDown(currRow, endRow, currCol, endCol, person, id);*/
-						console.log(currRow, endRow, currCol, endCol, person, id, movePrimary, moveSecondary, 3);
+						// console.log(currRow, endRow, currCol, endCol, person, id, movePrimary, moveSecondary, 3);
 						this.allowedDirection(currRow, endRow, currCol, endCol, person, id, movePrimary, moveSecondary, 3);
 					} else {
-						
+
 						/*this.moveDown(currRow, endRow, currCol, endCol, person, id);*/
-						console.log(currRow, endRow, currCol, endCol, person, id, movePrimary, moveSecondary, 3);
+						// console.log(currRow, endRow, currCol, endCol, person, id, movePrimary, moveSecondary, 3);
 						this.allowedDirection(currRow, endRow, currCol, endCol, person, id, movePrimary, moveSecondary, 3);
 					}
 				} else {
 					if (totalHorz == 0) {
 						/*this.moveUp(currRow, endRow, currCol, endCol, person, id);*/
-						console.log(currRow, endRow, currCol, endCol, person, id, movePrimary, moveSecondary, 1);
+						// console.log(currRow, endRow, currCol, endCol, person, id, movePrimary, moveSecondary, 1);
 						this.allowedDirection(currRow, endRow, currCol, endCol, person, id, movePrimary, moveSecondary, 1);
 					} else {
 						/*this.moveUp(currRow, endRow, currCol, endCol, person, id);*/
-						console.log(currRow, endRow, currCol, endCol, person, id, movePrimary, moveSecondary, 1);
+						// console.log(currRow, endRow, currCol, endCol, person, id, movePrimary, moveSecondary, 1);
 						this.allowedDirection(currRow, endRow, currCol, endCol, person, id, movePrimary, moveSecondary, 1);
 					}
 				}
@@ -1450,7 +1540,15 @@ function person(startCol, endCol, startRow, endRow, num, steps,currCol, currRow)
 			/*app.vars.sortedPeople.splice(id, 1);
 			app.vars.currPerson = -1;*/
 
-			console.log(person);
+			// Delete object
+
+			// var curr = jQuery.grep(people, function(el) {
+			// 	return el.num != person;
+			// });
+			//
+			// delete people[];
+
+			// console.log(person);
 
 			/*if(people.length > 0) {
 				people.splice((person - 1), 1);
@@ -1460,7 +1558,7 @@ function person(startCol, endCol, startRow, endRow, num, steps,currCol, currRow)
 
 			if(typeof cbf == 'function') {
 				cbf.call(this);
-			}			
+			}
 		};
 
 		this.checkUp = function(currRow, endRow, currCol, endCol, person, id, cbf) {
@@ -1572,4 +1670,3 @@ function person(startCol, endCol, startRow, endRow, num, steps,currCol, currRow)
 }
 
 var people = [];
-
